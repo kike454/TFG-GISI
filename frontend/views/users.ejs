@@ -1,0 +1,35 @@
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><%= title %></title>
+    <link rel="stylesheet" href="/css/style.css" />
+  </head>
+  <body>
+    <h1><%= title %></h1>
+    <p>Bienvenido a <%= title %></p>
+    
+    
+    <ul id="userList"></ul>
+    
+    
+
+    <form id = "userForm"  method="post">
+      <label for="fname">Username:</label>
+      <input type="text" id="fname" name="fname"><br><br>
+
+      <label for="lname">Password:</label>
+      <input type="text" id="pass" name="pass"><br><br>
+
+
+      <label for="lname">Score:</label>
+      <input type="text" id="Score" name="Score"><br><br>
+
+      <input type="submit" value="Submit">
+    </form>
+
+    <script src="/js/getUser.js" defer></script>
+    
+    <script src="/js/postUser.js" defer></script>
+  </body>
+</html>
