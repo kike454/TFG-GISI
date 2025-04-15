@@ -15,12 +15,12 @@
     "ejs": "~2.6.1",
     "express": "~4.16.1",
     "express-session": "^1.18.1",
+    "finalhandler": "^1.2.0",
     "http-errors": "~1.6.3",
     "morgan": "~1.9.1",
     "pg": "^8.7.3",
     "sequelize": "^6.21.3",
-    "socket.io": "^4.5.4",
-    "finalhandler": "^1.2.0"
+    "socket.io": "^4.5.4"
   },
   "devDependencies": {
     "nodemon": "^3.1.9"

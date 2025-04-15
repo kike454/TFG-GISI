@@ -1,7 +1,11 @@
 
 //console.log("hola");
 
-fetch('http://localhost:3001/api/users')
+const apiBase = window.location.hostname.includes("localhost")
+  ? "http://localhost:3001"
+  : "http://34.201.229.162:3001";
+
+fetch(`${apiBase}/api/users`)
   .then(response => response.json())
   .then(data => {
     console.log("Usuarios:", data); 
