@@ -1,33 +1,43 @@
-var express = require('express');
-var router = express.Router();
-const database = require('../database');
 
-/* GET users listing. */
-router.get('/', function(req, res, next) {
 
-  const userList = Object.keys(database.users.get());
-  res.json({ users: userList });
+const express = require('express');
+const router = express.Router();
+//const Usuario = require('../database/models/user.model');
+const { Usuario } = require('../database');
 
+
+router.get('/', async function(req, res, next) {
+  try {
+    const users = await Usuario.findAll({ attributes: ['nombre'] });
+    const userList = users.map(user => user.nombre);
+    res.json({ users: userList });
+  } catch (error) {
+    res.status(500).json({ error: 'Error al obtener usuarios' });
+  }
 });
 
 
 router.post('/addNewUser', async function(req, res, next) {
-
-  const { username, password, role, score } = req.body;
-
-
-  //console.log(req.body, req.body.username);
-
+  const { username, password, role, score, correoElectronico, nif } = req.body;
 
   try {
-    await database.users.register(username, password, role, score);
+    const existing = await Usuario.findOne({ where: { nombre: username } });
+    if (existing) {
+      return res.status(400).json({ error: `Ya existe el usuario ${username}` });
+    }
+
+    await Usuario.create({
+      nombre: username,
+      password,
+      rol: role,
+      correoElectronico,
+      nif
+    });
+
     res.status(201).json({ message: `Usuario ${username} registrado correctamente.` });
   } catch (error) {
     res.status(400).json({ error: error.message });
   }
-
 });
 
-
 module.exports = router;
-
