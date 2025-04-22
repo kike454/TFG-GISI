@@ -10,35 +10,28 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repo
+      - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Setup SSH
+      - name: Setup SSH agent
         uses: webfactory/ssh-agent@v0.8.0
         with:
           ssh-private-key: ${{ secrets.EC2_SSH_KEY }}
 
-      - name: Deploy over SSH
-        env:
-          DB_NAME: ${{ secrets.DB_NAME }}
-          DB_USER: ${{ secrets.DB_USER }}
-          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
-          DB_HOST: ${{ secrets.DB_HOST }}
-          DB_DIALECT: ${{ secrets.DB_DIALECT }}
+      - name: Generate .env file locally
         run: |
-          ssh -o StrictHostKeyChecking=no ${{ secrets.EC2_USER }}@${{ secrets.EC2_IP }} '
-            echo "[+] Generando archivo .env..."
-            cat <<EOF > ~/TFG-GISI/backend/.env
-DB_NAME='${DB_NAME}'
-DB_USER='${DB_USER}'
-DB_PASSWORD='${DB_PASSWORD}'
-DB_HOST='${DB_HOST}'
-DB_DIALECT='${DB_DIALECT}'
+          cat <<EOF > backend.env
+DB_NAME=${{ secrets.DB_NAME }}
+DB_USER=${{ secrets.DB_USER }}
+DB_PASSWORD=${{ secrets.DB_PASSWORD }}
+DB_HOST=${{ secrets.DB_HOST }}
+DB_DIALECT=${{ secrets.DB_DIALECT }}
 EOF
 
-            echo "[+] .env generado con éxito:"
-            cat ~/TFG-GISI/backend/.env
+      - name: Copy .env to EC2 instance
+        run: |
+          scp -o StrictHostKeyChecking=no backend.env ${{ secrets.EC2_USER }}@${{ secrets.EC2_IP }}:~/TFG-GISI/backend/.env
 
-            echo "[+] Ejecutando script de despliegue..."
-            bash ~/deploy.sh
-          '
+      - name: Run deploy script on EC2
+        run: |
+          ssh -o StrictHostKeyChecking=no ${{ secrets.EC2_USER }}@${{ secrets.EC2_IP }} 'bash ~/deploy.sh'
