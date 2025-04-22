@@ -26,4 +26,19 @@ jobs:
           DB_HOST: ${{ secrets.DB_HOST }}
           DB_DIALECT: ${{ secrets.DB_DIALECT }}
         run: |
-          ssh -o StrictHostKeyChecking=no ${{ secrets.EC2_USER }}@${{ secrets.EC2_IP }} 'bash ~/deploy.sh'
+          ssh -o StrictHostKeyChecking=no ${{ secrets.EC2_USER }}@${{ secrets.EC2_IP }} '
+            echo "[+] Generando archivo .env..."
+            cat <<EOF > ~/TFG-GISI/backend/.env
+DB_NAME='${DB_NAME}'
+DB_USER='${DB_USER}'
+DB_PASSWORD='${DB_PASSWORD}'
+DB_HOST='${DB_HOST}'
+DB_DIALECT='${DB_DIALECT}'
+EOF
+
+            echo "[+] .env generado con éxito:"
+            cat ~/TFG-GISI/backend/.env
+
+            echo "[+] Ejecutando script de despliegue..."
+            bash ~/deploy.sh
+          '
