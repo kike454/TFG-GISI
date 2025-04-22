@@ -18,3 +18,6 @@ Este proyecto está licenciado bajo la licencia **Creative Commons Atribución-N
 
 ![Licencia Creative Commons](https://licensebuttons.net/l/by-nc-sa/4.0/88x31.png)  
 [Ver la licencia completa](https://creativecommons.org/licenses/by-nc-sa/4.0/)
+## Estado del despliegue
+
+Este commit se utiliza para probar el correcto funcionamiento del CI/CD en EC2 mediante GitHub Actions.
