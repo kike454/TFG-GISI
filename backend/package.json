@@ -16,12 +16,10 @@
     "ejs": "~2.6.1",
     "express": "~4.16.1",
     "express-session": "^1.18.1",
-    "finalhandler": "^1.2.0",
     "http-errors": "~1.6.3",
     "morgan": "~1.9.1",
     "pg": "^8.10.0",
     "sequelize": "^6.32.1",
-    "socket.io": "^4.5.4",
     "uuid": "^9.0.0"
   },
   "devDependencies": {
