@@ -27,9 +27,23 @@ const usersRouter = require('./routes/users');
 
 var app = express();
 
+const allowedOrigins = [
+  'http://localhost:5000',
+  'http://34.201.229.162:5000',  
+  'http://ec2-34-201-229-162.compute-1.amazonaws.com:5000'  
+];
+
+
+
 //CROSS
 app.use(cors({
-  origin: "http://localhost:5000", 
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   credentials: true
 }));
 
