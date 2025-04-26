@@ -1,11 +1,61 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <title><%= title %></title>
-    <link rel='stylesheet' href='/css/style.css' />
-  </head>
-  <body>
-    <h1><%= title %></h1>
-    <p>Welcome to <%= title %></p>
-  </body>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Biblioteca GREMA</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="/css/style.css" />
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+    integrity="sha512-o6GgRP0j7Pu5R3oDwvf3MwRHzqx3o2Ht2MGiKUyMaJUpDcmDwAzmynbQq5X4X0uvpB3TDKJ2JppnSSuM2Nzt1g=="
+    crossorigin="anonymous"
+    referrerpolicy="no-referrer"
+  />
+</head>
+<body>
+
+  <% include header.ejs %>
+
+  <section class="hero-section d-flex align-items-center justify-content-center text-center text-white" style="background-image: url('https://files.123inventatuweb.com/2c/95/2c95231f-d695-4d0b-bdc6-c2fbc307df55.jpg'); background-size: cover; background-position: center; height: 100vh;">
+    <div class="overlay"></div>
+    <div class="z-1">
+      
+      <h1 class="display-4 fw-bold text-shadow">Bienvenido a la Biblioteca GREMA</h1>
+      <p class="lead text-shadow mb-4">Tu espacio de lectura, historia y cultura helénica</p>
+
+      
+      <div class="d-flex justify-content-center gap-3">
+        <a href="https://www.facebook.com/grema.org.es/?locale=es_ES" target="_blank" class="btn btn-primary">
+          <i class="fab fa-facebook-f me-2"></i> Facebook
+        </a>
+        <a href="mailto:info@grema.org" class="btn btn-primary">
+          <i class="fas fa-envelope me-2"></i> info@grema.org
+        </a>
+      </div>
+
+    </div>
+  </section>
+
+  <section class="info-section py-5 bg-light text-center">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-4">
+          <h2>+1200</h2>
+          <p>Libros disponibles</p>
+        </div>
+        <div class="col-md-4">
+          <h2>+300</h2>
+          <p>Usuarios registrados</p>
+        </div>
+        <div class="col-md-4">
+          <h2>+50</h2>
+          <p>Autores helénicos</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</body>
 </html>
