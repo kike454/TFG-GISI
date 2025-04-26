@@ -1,6 +1,6 @@
 const apiBase = window.location.hostname.includes("localhost")
   ? "http://localhost:3001"
-  : "http://34.201.229.162:3001";
+  : "http://ec2-34-201-229-162.compute-1.amazonaws.com:3001";
 
 fetch(`${apiBase}/api/users/session-info`, {
   credentials: "include"
