@@ -7,7 +7,7 @@ fetch(`${apiBase}/api/users/session-info`, {
 })
   .then(res => res.json())
   .then(data => {
-    // opcional: guardar en localStorage, modificar UI, etc.
+   
     if (data.session) {
       localStorage.setItem("usuario", JSON.stringify(data.session));
       console.log("Sesión:", data.session);
