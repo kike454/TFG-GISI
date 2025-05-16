@@ -43,7 +43,9 @@ describe(' API Users', () => {
       });
 
     expect(res.status).to.equal(200);
-    expect(res.body).to.have.property('message').equal('Login correcto');
+    expect(res.body).to.have.property('token').that.is.a('string');
+    expect(res.body).to.have.property('user').that.is.an('object');
+    expect(res.body.user).to.have.property('nombre', mockUser.username);
   });
 
   it('Debería fallar login con contraseña incorrecta', async () => {
