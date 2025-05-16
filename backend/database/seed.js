@@ -6,11 +6,7 @@ const { v4: uuidv4 } = require('uuid');
 const {
     sequelize,
     Usuario,
-    Libro,
-    Reserva,
-    Cuota,
-    Hijo,
-    Pareja
+    Libro
   } = require('./index');
   
   async function seedDatabase() {
@@ -48,44 +44,7 @@ const {
       
   
       
-      await Reserva.bulkCreate([
-  {
-    idReserva: uuidv4(),
-    fechaInicio: new Date(),
-    fechaFin: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
-    estadoReserva: 'activa',
-    codigoFinalizacion: `REV-${uuidv4()}`, 
-    UsuarioId: usuarios[0].id,
-    LibroId: libros[0].id
-  },
-  {
-    idReserva: uuidv4(),
-    fechaInicio: new Date(),
-    fechaFin: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000),
-    estadoReserva: 'activa',
-    codigoFinalizacion: `REV-${uuidv4()}`, 
-    UsuarioId: usuarios[1].id,
-    LibroId: libros[1].id
-  }
-]);
-  
-      
-      await Cuota.bulkCreate([
-        { anio: 2024, UsuarioId: usuarios[0].id },
-        { anio: 2025, UsuarioId: usuarios[1].id }
-      ]);
-  
-      
-      await Hijo.bulkCreate([
-        { nombre: 'Lucas', UsuarioId: usuarios[0].id },
-        { nombre: 'Ana', UsuarioId: usuarios[1].id }
-      ]);
-  
-      
-      await Pareja.bulkCreate([
-        { nombre: 'Laura', UsuarioId: usuarios[0].id },
-        { nombre: 'Pedro', UsuarioId: usuarios[1].id }
-      ]);
+   
   
       console.log(' Datos de prueba insertados correctamente.');
     } catch (error) {
