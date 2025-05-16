@@ -5,7 +5,6 @@ const { Usuario } = require('../database');
 const { Op } = require('sequelize');
 
 describe(' API Users', () => {
-
   const usernameTest = `testuser_${Date.now()}`;
 
   const mockUser = {
@@ -60,8 +59,41 @@ describe(' API Users', () => {
     expect(res.body).to.have.property('error').that.includes('Contraseña incorrecta');
   });
 
-});
+  it('Debería obtener la información de sesión con un token válido', async () => {
+    const loginRes = await request(app)
+      .post('/api/users/login')
+      .send({
+        username: mockUser.username,
+        password: mockUser.password
+      });
 
+    const token = loginRes.body.token;
+
+    const sessionRes = await request(app)
+      .get('/api/users/session-info')
+      .set('Authorization', `Bearer ${token}`);
+
+    expect(sessionRes.status).to.equal(200);
+    expect(sessionRes.body).to.have.property('session');
+    expect(sessionRes.body.session).to.have.property('nombre', mockUser.username);
+  });
+
+  it('Debería responder correctamente al logout', async () => {
+    const res = await request(app)
+      .post('/api/users/logout');
+
+    expect(res.status).to.equal(200);
+    expect(res.body).to.have.property('message').that.includes('Logout correcto');
+  });
+
+  it('Debería rechazar acceso a sesión sin token', async () => {
+    const res = await request(app)
+      .get('/api/users/session-info');
+
+    expect(res.status).to.equal(401);
+    expect(res.body).to.have.property('error').that.includes('Token no proporcionado');
+  });
+});
 
 after(async () => {
   console.log(' Borrando usuarios de prueba...');
