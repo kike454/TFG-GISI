@@ -1,4 +1,6 @@
 require('dotenv').config();
+const { v4: uuidv4 } = require('uuid');
+
 
 
 const {
@@ -47,21 +49,25 @@ const {
   
       
       await Reserva.bulkCreate([
-        {
-          fechaInicio: new Date(),
-          fechaFin: new Date(new Date().setDate(new Date().getDate() + 7)),
-          estadoReserva: 'activa',
-          UsuarioId: usuarios[0].id,
-          LibroId: libros[0].id
-        },
-        {
-          fechaInicio: new Date(),
-          fechaFin: new Date(new Date().setDate(new Date().getDate() + 14)),
-          estadoReserva: 'activa',
-          UsuarioId: usuarios[1].id,
-          LibroId: libros[1].id
-        }
-      ]);
+  {
+    idReserva: uuidv4(),
+    fechaInicio: new Date(),
+    fechaFin: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+    estadoReserva: 'activa',
+    codigoFinalizacion: `REV-${uuidv4()}`, 
+    UsuarioId: usuarios[0].id,
+    LibroId: libros[0].id
+  },
+  {
+    idReserva: uuidv4(),
+    fechaInicio: new Date(),
+    fechaFin: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000),
+    estadoReserva: 'activa',
+    codigoFinalizacion: `REV-${uuidv4()}`, 
+    UsuarioId: usuarios[1].id,
+    LibroId: libros[1].id
+  }
+]);
   
       
       await Cuota.bulkCreate([
