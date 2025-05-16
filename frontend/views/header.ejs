@@ -1,33 +1,18 @@
 <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-    <div class="container-fluid">
-      <a class="navbar-brand" href="/">BIBLIOTECA GREMA</a>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
-        aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-  
-      <div class="collapse navbar-collapse" id="nav-auth">
-        <ul class="navbar-nav ms-auto">
-          <% if (session && session.user) { %>
-            <li class="nav-item">
-              <a class="nav-link" href="/reservas">Mis Reservas</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="/ajustes">Ajustes</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="/logout">Logout</a>
-            </li>
-          <% } else { %>
-            <li class="nav-item">
-              <a class="nav-link" href="/login">Login</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="/register">Registro</a>
-            </li>
-          <% } %>
-        </ul>
-      </div>
+  <div class="container-fluid">
+    <a class="navbar-brand" href="/">BIBLIOTECA GREMA</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+      aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarNav">
+      
+      <ul class="navbar-nav ms-auto" id="nav-links">
+        
+      </ul>
     </div>
-  </nav>
-  
+  </div>
+</nav>
+
+<script src="/js/navbar.js" defer></script>
