@@ -22,9 +22,9 @@ module.exports = (sequelize) => {
     formato: DataTypes.STRING,
     genero: DataTypes.STRING,
     copias: DataTypes.INTEGER,
-    portada: DataTypes.STRING,
-    imagen2: DataTypes.STRING,
-    imagen3: DataTypes.STRING
+    portada: DataTypes.BLOB('long'),
+    imagen2: DataTypes.BLOB('long'),
+    imagen3: DataTypes.BLOB('long')
   }, {
     tableName: 'libros',
     timestamps: false

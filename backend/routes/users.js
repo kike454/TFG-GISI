@@ -1,28 +1,14 @@
-
-
 const express = require('express');
 const router = express.Router();
-const { Usuario } = require('../database');
+const { Usuario, Pareja, Hijo } = require('../database');
 const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
+const verifyToken = require('../middlewares/verifyToken');
+
+const JWT_SECRET = 'una-clave-super-secreta';
 
 
-
-router.get('/', async function(req, res, next) {
-  try {
-    const users = await Usuario.findAll({ attributes: ['nombre'] });
-    const userList = users.map(user => user.nombre);
-    res.json({ users: userList });
-  } catch (error) {
-    res.status(500).json({ error: 'Error al obtener usuarios' });
-  }
-});
-
-
-router.get('/session-info', (req, res) => {
-  res.json({ session: req.session.user || null });
-});
-
-router.post('/register', async function(req, res, next) {
+router.post('/register', async (req, res) => {
   const { username, password, role, correoElectronico, nif } = req.body;
 
   try {
@@ -39,19 +25,12 @@ router.post('/register', async function(req, res, next) {
       nif
     });
 
-  
-    req.session.user = {
-      id: user.id,
-      nombre: user.nombre,
-      rol: user.rol
-    };
-
     res.status(201).json({ message: `Usuario ${username} registrado correctamente.` });
   } catch (error) {
+    console.error('Error en registro:', error);
     res.status(400).json({ error: error.message });
   }
 });
-
 
 
 router.post('/login', async (req, res) => {
@@ -69,33 +48,30 @@ router.post('/login', async (req, res) => {
       return res.status(401).json({ error: 'Contraseña incorrecta' });
     }
 
+    const token = jwt.sign(
+      { id: user.id, nombre: user.nombre, rol: user.rol },
+      JWT_SECRET,
+      { expiresIn: '2h' }
+    );
 
-    req.session.user = {
-      id: user.id,
-      nombre: user.nombre,
-      rol: user.rol
-    };
-
-    res.status(200).json({ message: 'Login correcto' });
+    res.status(200).json({ token, user: { id: user.id, nombre: user.nombre, rol: user.rol } });
+      
   } catch (err) {
+    console.error('Error en login:', err);
     res.status(500).json({ error: 'Error interno' });
   }
 });
 
-router.get('/reservas', async (req, res) => {
- 
-  res.json({ message: `Reservas del usuario ${req.user.nombre}` });
-});
 
+router.get('/session-info', verifyToken, (req, res) => {
+  res.json({ session: req.user });
+});
 
 
 router.post('/logout', (req, res) => {
-  req.session.destroy(err => {
-    if (err) return res.status(500).json({ error: 'Error al cerrar sesión' });
-
-    res.clearCookie('connect.sid');
-    res.status(200).json({ message: 'Logout correcto' });
-  });
+  res.status(200).json({ message: 'Logout correcto. Borra el token en el cliente.' });
 });
+
+
 
 module.exports = router;

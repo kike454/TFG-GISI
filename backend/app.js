@@ -6,16 +6,19 @@ const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 const cors = require('cors');
-const session = require('express-session');
-const SequelizeStore = require('connect-session-sequelize')(session.Store);
+//const session = require('express-session');
+//const SequelizeStore = require('connect-session-sequelize')(session.Store);
 const { sequelize } = require('./database');
 
 const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/users');
+const booksRouter = require('./routes/books');
+const reservasRouter = require('./routes/reservas');
+const superUsersRouter = require('./routes/superUsers');
 
 const app = express();
 
-
+/*
 const sessionStore = new SequelizeStore({
   db: sequelize,
   checkExpirationInterval: 15 * 60 * 1000,
@@ -23,7 +26,7 @@ const sessionStore = new SequelizeStore({
 });
 sessionStore.sync();
 
-
+*/
 const allowedOrigins = [
   'http://localhost:5000',
   'http://34.201.229.162:5000',
@@ -49,7 +52,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-
+/*
 app.use(session({
   secret: 'una-clave-super-secreta',
   store: sessionStore,
@@ -62,10 +65,13 @@ app.use(session({
     sameSite: 'lax' 
   }
 }));
-
+*/
 
 app.use('/', indexRouter);
 app.use('/api/users', usersRouter);
+app.use('/api/books', booksRouter);
+app.use('/api/reservas', reservasRouter);
+app.use('/api/superusers', superUsersRouter);
 
 // 404 y error handler
 app.use(function(req, res, next) {

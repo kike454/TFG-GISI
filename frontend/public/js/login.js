@@ -1,47 +1,45 @@
-
-
 const apiBase = window.location.hostname.includes("localhost")
   ? "http://localhost:3001"
   : "http://ec2-34-201-229-162.compute-1.amazonaws.com:3001";
 
-// Maneja login
+
+function mostrarToast(mensaje, tipo = "danger") {
+  const toast = document.getElementById("toastMensaje");
+  const texto = document.getElementById("toastMensajeTexto");
+
+  texto.textContent = mensaje;
+  toast.classList.remove("bg-success", "bg-danger", "bg-warning");
+  toast.classList.add(`bg-${tipo}`);
+
+  const toastBootstrap = bootstrap.Toast.getOrCreateInstance(toast);
+  toastBootstrap.show();
+}
+
 document.getElementById("loginForm").addEventListener("submit", async (e) => {
   e.preventDefault();
 
   const username = document.getElementById("username").value;
   const password = document.getElementById("password").value;
 
-  const res = await fetch(`${apiBase}/api/users/login`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    credentials: "include", 
-    body: JSON.stringify({ username, password })
-  });
-
-  const result = await res.json();
-  const msg = document.getElementById("loginMessage");
-
-  if (res.ok) {
-    msg.textContent = "Inicio de sesión exitoso.";
-    msg.className = "text-success";
-
-    
-    const sessionRes = await fetch(`${apiBase}/api/users/session-info`, {
-      credentials: "include"
+  try {
+    const res = await fetch(`${apiBase}/api/users/login`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ username, password })
     });
 
-    const session = await sessionRes.json();
+    const result = await res.json();
 
-    if (session.session) {
+    if (res.ok) {
+      localStorage.setItem("token", result.token);
+      localStorage.setItem("usuario", JSON.stringify(result.user));
+      document.cookie = `token=${result.token}; path=/`;
       window.location.href = "/biblioteca";
     } else {
-      msg.textContent = "Sesión no persistió. Intenta de nuevo.";
-      msg.className = "text-danger";
+      mostrarToast(result.error || "Error en el login", "danger");
     }
-  } else {
-    msg.textContent = result.error || "Error en el inicio de sesión.";
-    msg.className = "text-danger";
+  } catch (err) {
+    console.error("Error en login:", err);
+    mostrarToast("Error de red", "danger");
   }
 });
-
-

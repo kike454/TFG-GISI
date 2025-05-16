@@ -7,6 +7,8 @@ var logger = require('morgan');
 const sessionBridge = require('./middleware/sessionBridge');
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
+var bibliotecaRouter = require('./routes/biblioteca');
+const superuserRouter = require('./routes/superusers');
 
 var app = express();
 
@@ -22,6 +24,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(sessionBridge);
 app.use('/', indexRouter);
 app.use('/', usersRouter);
+app.use('/', bibliotecaRouter);
+app.use('/super', superuserRouter);
 
 // catch 404
 app.use(function(req, res, next) {

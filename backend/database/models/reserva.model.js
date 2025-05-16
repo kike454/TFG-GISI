@@ -10,7 +10,13 @@ module.exports = (sequelize) => {
     },
     fechaInicio: DataTypes.DATE,
     fechaFin: DataTypes.DATE,
-    estadoReserva: DataTypes.STRING
+    estadoReserva: DataTypes.STRING,
+
+    codigoFinalizacion: {
+      type: DataTypes.STRING,
+      allowNull: false
+    }
+      
   }, {
     tableName: 'reservas',
     timestamps: false

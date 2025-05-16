@@ -8,7 +8,26 @@ module.exports = (sequelize) => {
       defaultValue: uuidv4,
       primaryKey: true
     },
-    nombre: DataTypes.STRING
+    UserId: {
+      type: DataTypes.UUID,
+      allowNull: false
+    },
+    nif: {
+      type: DataTypes.STRING
+    },
+    nombre: {
+      type: DataTypes.STRING,
+      allowNull: false
+    },
+    fechaNacimiento: {
+      type: DataTypes.DATE
+    },
+    telefono: {
+      type: DataTypes.STRING
+    },
+    imagen: {
+      type: DataTypes.STRING
+    }
   }, {
     tableName: 'parejas',
     timestamps: false
