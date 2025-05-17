@@ -20,6 +20,15 @@ router.get('/logout', (req, res) => {
   res.redirect('/login'); 
 });
 
+router.get('/reservas', verifyTokenFrontend,  (req, res) => {
+  res.render('reservas', { title: 'Mis Reservas' });
+});
+
+
+router.get('/ajustes', verifyTokenFrontend, (req, res) => {
+  res.render('ajustes', { title: 'Ajustes' });
+});
+
 
 
 
