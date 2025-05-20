@@ -454,6 +454,44 @@ router.put('/hijos/:id', verifyToken, verifySuperUser, async (req, res) => {
   }
 });
 
+router.post('/libros/import', verifyToken, verifySuperUser, upload.single('file'), async (req, res) => {
+  if (!req.file) {
+    return res.status(400).json({ error: 'No se proporcionó archivo Excel.' });
+  }
 
+  try {
+    const workbook = xlsx.readFile(req.file.path);
+    const hoja = workbook.Sheets[workbook.SheetNames[0]];
+    const data = xlsx.utils.sheet_to_json(hoja, { defval: null });
+
+    const parseFecha = (valor) => {
+      const fecha = new Date(valor);
+      return isNaN(fecha.getTime()) ? null : fecha;
+    };
+
+
+    const libros = data.map(row => ({
+      titulo: row['Titulo']?.toString().trim(),
+      autores: row['Autores']?.toString().trim(),
+      editorial: row['Editorial']?.toString().trim(),
+      isbn: row['ISBN']?.toString().trim(),
+      edad: parseInt(row['Edad']) || 0,
+      descripcion: row['Descripción.1']?.toString().trim(),
+      fechaEdicion: parseFecha(row['Fecha Edición']),
+      lenguaPublicacion: row['Lengua Publicación']?.toString().trim(),
+      numeroPaginas: parseInt(row['Nº Páginas']) || null,
+      edicion: row['Edición']?.toString().trim(),
+      formato: row['Formato']?.toString().trim(),
+      copias: parseInt(row['Copias']) || 1
+    }));
+
+    await Libro.bulkCreate(libros);
+    res.status(201).json({ message: 'Libros importados correctamente.' });
+
+  } catch (error) {
+    console.error('Error al importar libros:', error);
+    res.status(500).json({ error: 'Error interno durante la importación.' });
+  }
+});
 
 module.exports = router;
