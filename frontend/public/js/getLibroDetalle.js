@@ -18,7 +18,7 @@ function mostrarToast(mensaje, tipo = "success") {
 }
 
 async function cargarDetalleLibro() {
-  const token = localStorage.getItem('token'); 
+  const token = localStorage.getItem('token');
   const user = JSON.parse(localStorage.getItem('usuario'));
 
   try {
@@ -35,19 +35,27 @@ async function cargarDetalleLibro() {
     const contenedor = document.getElementById('detalle-libro');
 
     contenedor.innerHTML = `
-      <div class="card mx-auto" style="max-width: 600px;">
-        <img src="${libro.portada || '/images/default-cover.jpg'}" class="card-img-top" alt="${libro.titulo}">
-        <div class="card-body">
-          <h3 class="card-title">${libro.titulo}</h3>
-          <p class="card-text"><strong>Autor:</strong> ${libro.autores}</p>
-          <p class="card-text"><strong>Editorial:</strong> ${libro.editorial}</p>
-          <p class="card-text"><strong>Género:</strong> ${libro.genero}</p>
-          <p class="card-text"><strong>Edad recomendada:</strong> ${libro.edad} años</p>
-          <p class="card-text"><strong>Descripción:</strong> ${libro.descripcion || 'Sin descripción disponible.'}</p>
-          <button id="reservarBtn" class="btn btn-primary mt-3 w-100">Reservar</button>
-        </div>
-      </div>
-    `;
+  <div class="card mx-auto" style="max-width: 700px;">
+    <img src="${libro.portada || '/images/default-cover.jpg'}" class="card-img-top" alt="${libro.titulo}">
+    <div class="card-body text-start">
+      <h3 class="card-title text-center">${libro.titulo}</h3>
+      <hr />
+      <p><strong>ID:</strong> ${libro.id}</p>
+      <p><strong>ISBN:</strong> ${libro.isbn || 'N/A'}</p>
+      <p><strong>Edad recomendada:</strong> ${libro.edad || 'N/A'} años</p>
+      <p><strong>Autores:</strong> ${libro.autores || 'Desconocido'}</p>
+      <p><strong>Editorial:</strong> ${libro.editorial || 'N/A'}</p>
+      <p><strong>Fecha de edición:</strong> ${libro.fechaEdicion ? new Date(libro.fechaEdicion).toLocaleDateString() : 'N/A'}</p>
+      <p><strong>Lengua de publicación:</strong> ${libro.lenguaPublicacion || 'N/A'}</p>
+      <p><strong>Número de páginas:</strong> ${libro.numeroPaginas || 'N/A'}</p>
+      <p><strong>Descripción:</strong> ${libro.descripcion || 'Sin descripción disponible.'}</p>
+      <p><strong>Edición:</strong> ${libro.edicion || 'N/A'}</p>
+      <p><strong>Formato:</strong> ${libro.formato || 'N/A'}</p>
+      <button id="reservarBtn" class="btn btn-primary mt-4 w-100">Reservar</button>
+    </div>
+  </div>
+`;
+
 
     document.getElementById('reservarBtn').addEventListener('click', reservarLibro);
 

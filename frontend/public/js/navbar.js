@@ -1,5 +1,6 @@
 document.addEventListener('DOMContentLoaded', async () => {
   const navLinks = document.getElementById('nav-links');
+  const formBusqueda = document.getElementById('form-busqueda');
   const token = localStorage.getItem('token');
 
   if (!navLinks) return;
@@ -10,7 +11,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     ? 'http://localhost:3001'
     : 'http://ec2-34-201-229-162.compute-1.amazonaws.com:3001';
 
-  if (token) {
+if (token) {
     try {
       const res = await fetch(`${apiBase}/api/users/session-info`, {
         headers: { 'Authorization': `Bearer ${token}` }
@@ -38,9 +39,16 @@ document.addEventListener('DOMContentLoaded', async () => {
           <a class="nav-link" id="logoutLink" href="#">Logout</a>
         </li>
       `;
+
+      if (formBusqueda) {
+        formBusqueda.classList.remove('d-none');
+      }
+
     } catch (err) {
       console.error('Error cargando usuario:', err);
+      if (formBusqueda) formBusqueda.classList.add('d-none');
     }
+
   } else {
     navLinks.innerHTML = `
       <li class="nav-item">
@@ -50,6 +58,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         <a class="nav-link" href="/register">Registro</a>
       </li>
     `;
+
+    if (formBusqueda) formBusqueda.classList.add('d-none');
   }
 
   const logoutLink = document.getElementById('logoutLink');
@@ -59,6 +69,16 @@ document.addEventListener('DOMContentLoaded', async () => {
       localStorage.removeItem('token');
       document.cookie = 'token=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;';
       window.location.href = '/login';
+    });
+  }
+
+  if (formBusqueda) {
+    formBusqueda.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const query = document.getElementById('inputBusqueda').value.trim();
+      if (query.length > 0) {
+        window.location.href = `/biblioteca?busqueda=${encodeURIComponent(query)}`;
+      }
     });
   }
 });

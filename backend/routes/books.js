@@ -32,7 +32,14 @@ router.get('/:id', async (req, res) => {
       return res.status(404).json({ error: 'Libro no encontrado' });
     }
 
-    res.json(libro);
+    const libroConImagenes = {
+      ...libro.toJSON(),
+      portada: libro.portada ? `data:image/jpeg;base64,${libro.portada.toString('base64')}` : null,
+      imagen2: libro.imagen2 ? `data:image/jpeg;base64,${libro.imagen2.toString('base64')}` : null,
+      imagen3: libro.imagen3 ? `data:image/jpeg;base64,${libro.imagen3.toString('base64')}` : null
+    };
+
+    res.json(libroConImagenes);
   } catch (error) {
     console.error('Error al obtener el libro:', error);
     res.status(500).json({ error: 'Error interno del servidor' });

@@ -68,12 +68,26 @@ router.get('/', verifyToken, async (req, res) => {
       include: [{ model: Libro }]
     });
 
-    res.json(reservas);
+    const reservasConImagenes = reservas.map(reserva => {
+      const libro = reserva.Libro;
+
+      return {
+        ...reserva.toJSON(),
+        Libro: {
+          ...libro.toJSON(),
+          portada: libro.portada ? `data:image/jpeg;base64,${libro.portada.toString('base64')}` : null,
+          imagen2: libro.imagen2 ? `data:image/jpeg;base64,${libro.imagen2.toString('base64')}` : null,
+          imagen3: libro.imagen3 ? `data:image/jpeg;base64,${libro.imagen3.toString('base64')}` : null
+        }
+      };
+    });
+
+    res.json(reservasConImagenes);
   } catch (error) {
     console.error('Error al obtener reservas:', error);
     res.status(500).json({ error: 'Error interno' });
   }
-});
+  });
 
 router.delete('/:id', verifyToken, async (req, res) => {
   const reservaId = req.params.id;

@@ -6,21 +6,60 @@ async function cargarLibros() {
   const contenedor = document.getElementById('contenedor-libros');
   const token = localStorage.getItem('token');
 
-  const response = await fetch(`${apiBase}/api/books`, {
-    headers: { "Authorization": `Bearer ${token}` }
-  });
 
-  const libros = await response.json();
+  const formBusqueda = document.getElementById('form-busqueda');
+  if (formBusqueda) {
+    if (!token) {
+      formBusqueda.style.display = 'none';
+    } else {
+      formBusqueda.style.display = 'flex';
+    }
+  }
 
-  if (response.ok) {
-    libros.forEach((libro, index) => {
+  const params = new URLSearchParams(window.location.search);
+  const busqueda = params.get("busqueda")?.toLowerCase().trim() || "";
+
+
+
+try {
+    const response = await fetch(`${apiBase}/api/books`, {
+      headers: { "Authorization": `Bearer ${token}` }
+    });
+
+    const libros = await response.json();
+    if (!response.ok) {
+      console.error("Error al obtener libros:", libros);
+      return;
+    }
+
+    contenedor.innerHTML = "";
+
+    const librosFiltrados = busqueda
+      ? libros.filter(libro => {
+          const titulo = (libro.titulo || '').toLowerCase().trim();
+          const autores = (libro.autores || '').toLowerCase().trim();
+          return titulo.includes(busqueda) || autores.includes(busqueda);
+        })
+      : libros;
+
+    if (librosFiltrados.length === 0) {
+      contenedor.innerHTML = `
+        <div class="col-12 text-center mt-4">
+          <div class="alert alert-warning" role="alert">
+            No se encontraron libros que coincidan con tu búsqueda.
+          </div>
+        </div>
+      `;
+      return;
+    }
+
+    librosFiltrados.forEach((libro, index) => {
       const col = document.createElement('div');
       col.classList.add('col');
 
       const card = document.createElement('div');
       card.classList.add('card', 'h-100', 'shadow-sm');
 
-      
       const carouselId = `carousel-${index}`;
       const carousel = document.createElement('div');
       carousel.id = carouselId;
@@ -56,26 +95,36 @@ async function cargarLibros() {
         }
       });
 
-     
-      const prevBtn = document.createElement('button');
-      prevBtn.classList.add('carousel-control-prev');
-      prevBtn.setAttribute('type', 'button');
-      prevBtn.setAttribute('data-bs-target', `#${carouselId}`);
-      prevBtn.setAttribute('data-bs-slide', 'prev');
-      prevBtn.innerHTML = `<span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                           <span class="visually-hidden">Anterior</span>`;
+      if (inner.children.length > 0) {
+        carousel.appendChild(inner);
 
-      const nextBtn = document.createElement('button');
-      nextBtn.classList.add('carousel-control-next');
-      nextBtn.setAttribute('type', 'button');
-      nextBtn.setAttribute('data-bs-target', `#${carouselId}`);
-      nextBtn.setAttribute('data-bs-slide', 'next');
-      nextBtn.innerHTML = `<span class="carousel-control-next-icon" aria-hidden="true"></span>
-                           <span class="visually-hidden">Siguiente</span>`;
+        if (inner.children.length > 1) {
+          const prevBtn = document.createElement('button');
+          prevBtn.classList.add('carousel-control-prev');
+          prevBtn.setAttribute('type', 'button');
+          prevBtn.setAttribute('data-bs-target', `#${carouselId}`);
+          prevBtn.setAttribute('data-bs-slide', 'prev');
+          prevBtn.innerHTML = `
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Anterior</span>
+          `;
 
-      carousel.appendChild(inner);
-      carousel.appendChild(prevBtn);
-      carousel.appendChild(nextBtn);
+          const nextBtn = document.createElement('button');
+          nextBtn.classList.add('carousel-control-next');
+          nextBtn.setAttribute('type', 'button');
+          nextBtn.setAttribute('data-bs-target', `#${carouselId}`);
+          nextBtn.setAttribute('data-bs-slide', 'next');
+          nextBtn.innerHTML = `
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Siguiente</span>
+          `;
+
+          carousel.appendChild(prevBtn);
+          carousel.appendChild(nextBtn);
+        }
+
+        card.appendChild(carousel);
+      }
 
       const cardBody = document.createElement('div');
       cardBody.classList.add('card-body');
@@ -100,15 +149,14 @@ async function cargarLibros() {
       cardBody.appendChild(author);
       cardFooter.appendChild(link);
 
-      card.appendChild(carousel);
       card.appendChild(cardBody);
       card.appendChild(cardFooter);
       col.appendChild(card);
       contenedor.appendChild(col);
     });
-  } else {
-    console.error('Error al cargar los libros');
+
+  } catch (err) {
+    console.error("Error al cargar libros:", err);
   }
 }
-
 cargarLibros();

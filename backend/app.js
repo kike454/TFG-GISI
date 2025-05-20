@@ -14,7 +14,7 @@ const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/users');
 const booksRouter = require('./routes/books');
 const reservasRouter = require('./routes/reservas');
-//const superUsersRouter = require('./routes/superUsers');
+const superUsersRouter = require('./routes/superUsers');
 
 const app = express();
 
@@ -71,7 +71,7 @@ app.use('/', indexRouter);
 app.use('/api/users', usersRouter);
 app.use('/api/books', booksRouter);
 app.use('/api/reservas', reservasRouter);
-//app.use('/api/superusers', superUsersRouter);
+app.use('/api/superusers', superUsersRouter);
 
 // 404 y error handler
 app.use(function(req, res, next) {

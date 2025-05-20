@@ -4,7 +4,8 @@ const verifyTokenFrontend = require('../middleware/verifyTokenFrontend');
 
 
 router.get('/biblioteca', verifyTokenFrontend,  (req, res) => {
-  res.render('biblioteca', { title: 'Biblioteca' });
+  const busqueda = req.query.busqueda || '';
+  res.render('biblioteca', { title: 'Biblioteca', busqueda });
 });
 
 
