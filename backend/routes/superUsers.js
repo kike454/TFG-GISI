@@ -12,6 +12,12 @@ const fs = require('fs');
 const path = require('path');
 const upload = multer({ dest: 'uploads/' });
 
+const uploadImgs = multer().fields([
+  { name: 'portada', maxCount: 1 },
+  { name: 'imagen2', maxCount: 1 },
+  { name: 'imagen3', maxCount: 1 }
+]);
+
 
 router.get('/usuarios', verifyToken, verifySuperUser, async (req, res) => {
   try {
@@ -130,7 +136,181 @@ router.put('/reservas/:id/ampliar', verifyToken, verifySuperUser, async (req, re
   }
 });
 
+//Libros
 
+router.put('/libros/:id', verifyToken, verifySuperUser, uploadImgs, async (req, res) => {
+  const { id } = req.params;
+  const {
+    titulo,
+    autores,
+    editorial,
+    genero,
+    edad,
+    descripcion,
+    copias
+  } = req.body;
+
+  try {
+    const libro = await Libro.findByPk(id);
+
+    if (!libro) {
+      return res.status(404).json({ error: 'Libro no encontrado' });
+    }
+
+    await libro.update({
+      titulo: titulo ?? libro.titulo,
+      autores: autores ?? libro.autores,
+      editorial: editorial ?? libro.editorial,
+      genero: genero ?? libro.genero,
+      edad: edad !== undefined ? parseInt(edad) : libro.edad,
+      descripcion: descripcion ?? libro.descripcion,
+      copias: copias !== undefined ? parseInt(copias) : libro.copias,
+      portada: req.files?.portada?.[0]?.buffer ?? libro.portada,
+      imagen2: req.files?.imagen2?.[0]?.buffer ?? libro.imagen2,
+      imagen3: req.files?.imagen3?.[0]?.buffer ?? libro.imagen3
+    });
+
+    res.json({ message: 'Libro actualizado correctamente', libro });
+  } catch (error) {
+    console.error('Error actualizando libro con imágenes:', error);
+    res.status(500).json({ error: 'Error interno al actualizar libro' });
+  }
+});
+
+
+router.get('/libros', verifyToken, verifySuperUser, async (req, res) => {
+  try {
+    const libros = await Libro.findAll();
+    res.json(libros);
+  } catch (error) {
+    console.error('Error al obtener libros:', error);
+    res.status(500).json({ error: 'Error interno al obtener libros' });
+  }
+});
+
+
+router.delete('/libros/:id', verifyToken, verifySuperUser, async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const reservasActivas = await Reserva.count({
+      where: {
+        LibroId: id,
+        estadoReserva: 'activa'
+      }
+    });
+
+    if (reservasActivas > 0) {
+      return res.status(400).json({ error: 'No puedes eliminar este libro porque tiene reservas activas.' });
+    }
+
+    const libro = await Libro.findByPk(id);
+    if (!libro) {
+      return res.status(404).json({ error: 'Libro no encontrado' });
+    }
+
+    await libro.destroy();
+    res.status(200).json({ message: 'Libro eliminado correctamente.' });
+  } catch (error) {
+    console.error('Error al eliminar libro:', error);
+    res.status(500).json({ error: 'Error interno al eliminar el libro' });
+  }
+});
+
+
+router.post('/reservas', verifyToken, verifySuperUser, async (req, res) => {
+  const { userId, libroId } = req.body;
+
+  if (!userId || !libroId) {
+    return res.status(400).json({ error: 'Faltan datos (userId o libroId)' });
+  }
+
+  try {
+    const usuario = await Usuario.findByPk(userId);
+
+    
+    if (!usuario) return res.status(404).json({ error: 'Usuario no encontrado' });
+
+    //console.log("Membresía del usuario XOXOXOXOXOXOXXO:", usuario.membresiaPagada);
+
+    if (usuario.membresiaPagada !== true) {
+      console.log(' Bloqueado por membresía'); 
+      return res.status(403).json({ error: 'El usuario no tiene una membresía activa' });
+    }
+
+    const libro = await Libro.findByPk(libroId);
+    if (!libro || libro.copias <= 0) {
+      return res.status(400).json({ error: 'No hay copias disponibles del libro' });
+    }
+
+    const reservasActuales = await Reserva.count({
+      where: {
+        UsuarioId: userId,
+        estadoReserva: 'activa'
+      }
+    });
+
+    if (reservasActuales >= usuario.maxReservas) {
+      return res.status(403).json({
+        error: `El usuario ya tiene el máximo permitido de reservas (${usuario.maxReservas})`
+      });
+    }
+
+    await Reserva.create({
+      fechaInicio: new Date(),
+      fechaFin: new Date(new Date().setDate(new Date().getDate() + 7)),
+      estadoReserva: 'activa',
+      UsuarioId: userId,
+      LibroId: libroId,
+      codigoFinalizacion: `REV-${uuidv4()}`
+    });
+
+    libro.copias -= 1;
+    await libro.save();
+
+    res.status(201).json({ message: `Reserva creada para ${usuario.nombre}` });
+  } catch (error) {
+    console.error('Error al crear reserva como superuser:', error);
+    res.status(500).json({ error: 'Error interno' });
+  }
+});
+
+
+
+
+router.post('/libros', verifyToken, verifySuperUser, uploadImgs, async (req, res) => {
+  console.log("BODY:", req.body);
+  console.log("FILES:", req.files);
+  const {
+    titulo,
+    autores,
+    editorial,
+    genero,
+    edad,
+    descripcion,
+    copias
+  } = req.body;
+
+  try {
+    const nuevoLibro = await Libro.create({
+      titulo,
+      autores,
+      editorial,
+      genero,
+      edad: parseInt(edad) || 0,
+      descripcion,
+      copias: parseInt(copias) || 1,
+      portada: req.files?.portada?.[0]?.buffer || null,
+      imagen2: req.files?.imagen2?.[0]?.buffer || null,
+      imagen3: req.files?.imagen3?.[0]?.buffer || null
+    });
+
+    res.status(201).json({ message: 'Libro añadido correctamente', libro: nuevoLibro });
+  } catch (error) {
+    console.error('Error al crear libro con imágenes:', error);
+    res.status(500).json({ error: 'Error interno al crear el libro con imágenes' });
+  }
+});
 
 
 

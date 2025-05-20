@@ -19,7 +19,14 @@ router.get('/usuarios/:id', verifyTokenFrontend, verifySuperUserFrontend, (req, 
     res.render('super/usuario_detalle', { title: 'Detalle de Usuario' });
   });
 
+//LIBROS
+router.get('/libros', verifyTokenFrontend, verifySuperUserFrontend, (req, res) => {
+    res.render('super/libros', { title: 'Gestión de Libros' });
+  });
 
+router.get('/libros/crear', verifyTokenFrontend, verifySuperUserFrontend, (req, res) => {
+    res.render('super/crearLibro', { title: 'Añadir Libro' });
+  });
 
 
 

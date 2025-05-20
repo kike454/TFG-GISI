@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title><%= title %></title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+
+<% include ../header.ejs %>
+
+<div class="container-fluid">
+  <div class="row">
+    <% include leftVar.ejs %>
+
+    <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 mt-4">
+      <h2 class="mb-4">Gestión de Libros</h2>
+
+      <div class="mb-4">
+        <a href="/super/libros/crear" class="btn btn-primary">Añadir Nuevo Libro</a>
+        <a href="/super/libros/importar" class="btn btn-success ms-2">Importar CSV</a>
+      </div>
+
+      <div id="contenedor-libros"></div>
+    </main>
+  </div>
+</div>
+
+
+<div class="modal fade" id="modalAsignarReserva" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form id="formAsignarReserva">
+        <div class="modal-header">
+          <h5 class="modal-title" id="modalLabel">Asignar Reserva</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body">
+          <input type="hidden" id="libroIdSeleccionado">
+          <div class="mb-3">
+            <label for="nombreUsuario" class="form-label">Nombre del Usuario</label>
+            <input type="text" class="form-control" id="nombreUsuario" placeholder="Ej: carlos1" required>
+            <div id="sugerenciasUsuarios" class="list-group mt-1"></div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-primary">Asignar</button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+
+<div class="modal fade" id="modalEliminarLibro" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Confirmar Eliminación</h5>
+        <button class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+      <div class="modal-body">¿Estás seguro de eliminar este libro?</div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+        <button id="confirmarEliminarLibro" class="btn btn-danger">Eliminar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="modalEditarLibro" tabindex="-1" aria-labelledby="editarLibroLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <form id="formEditarLibro" enctype="multipart/form-data">
+        <div class="modal-header">
+          <h5 class="modal-title" id="editarLibroLabel">Editar Libro</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body">
+          <input type="hidden" id="editarLibroId">
+          <div class="mb-3">
+            <label for="editarTitulo" class="form-label">Título</label>
+            <input type="text" class="form-control" id="editarTitulo" name="titulo" required>
+          </div>
+          <div class="mb-3">
+            <label for="editarAutores" class="form-label">Autores</label>
+            <input type="text" class="form-control" id="editarAutores" name="autores" required>
+          </div>
+          <div class="mb-3">
+            <label for="editarEditorial" class="form-label">Editorial</label>
+            <input type="text" class="form-control" id="editarEditorial" name="editorial">
+          </div>
+          <div class="mb-3">
+            <label for="editarGenero" class="form-label">Género</label>
+            <input type="text" class="form-control" id="editarGenero" name="genero">
+          </div>
+          <div class="mb-3">
+            <label for="editarEdad" class="form-label">Edad recomendada</label>
+            <input type="number" class="form-control" id="editarEdad" name="edad">
+          </div>
+          <div class="mb-3">
+            <label for="editarCopias" class="form-label">Número de copias</label>
+            <input type="number" class="form-control" id="editarCopias" name="copias" value="1" min="1">
+          </div>
+          <div class="mb-3">
+            <label for="editarDescripcion" class="form-label">Descripción</label>
+            <textarea class="form-control" id="editarDescripcion" name="descripcion" rows="3"></textarea>
+          </div>
+
+          <!-- MODAL EDITAR LIBROS  -->
+          <div class="mb-3">
+            <label for="editarPortada" class="form-label">Portada (imagen)</label>
+            <input type="file" class="form-control" id="editarPortada" name="portada" accept="image/*">
+          </div>
+          <div class="mb-3">
+            <label for="editarImagen2" class="form-label">Imagen 2 (opcional)</label>
+            <input type="file" class="form-control" id="editarImagen2" name="imagen2" accept="image/*">
+          </div>
+          <div class="mb-3">
+            <label for="editarImagen3" class="form-label">Imagen 3 (opcional)</label>
+            <input type="file" class="form-control" id="editarImagen3" name="imagen3" accept="image/*">
+          </div>
+
+            <div class="mb-3">
+            <label for="editarISBN" class="form-label">ISBN</label>
+            <input type="text" class="form-control" id="editarISBN" name="isbn" />
+          </div>
+
+          <div class="mb-3">
+            <label for="editarFechaEdicion" class="form-label">Fecha de Edición</label>
+            <input type="date" class="form-control" id="editarFechaEdicion" name="fechaEdicion" />
+          </div>
+
+          <div class="mb-3">
+            <label for="editarLenguaPublicacion" class="form-label">Lengua de Publicación</label>
+            <input type="text" class="form-control" id="editarLenguaPublicacion" name="lenguaPublicacion" />
+          </div>
+
+          <div class="mb-3">
+            <label for="editarNumeroPaginas" class="form-label">Número de Páginas</label>
+            <input type="number" class="form-control" id="editarNumeroPaginas" name="numeroPaginas" />
+          </div>
+
+          <div class="mb-3">
+            <label for="editarEdicion" class="form-label">Edición</label>
+            <input type="text" class="form-control" id="editarEdicion" name="edicion" />
+          </div>
+
+          <div class="mb-3">
+            <label for="editarFormato" class="form-label">Formato</label>
+            <input type="text" class="form-control" id="editarFormato" name="formato" />
+          </div>
+
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+
+
+
+<div class="position-fixed bottom-0 end-0 p-3" style="z-index: 9999">
+  <div id="toastMensaje" class="toast align-items-center text-white bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">
+    <div class="d-flex">
+      <div class="toast-body" id="toastMensajeTexto">Mensaje</div>
+      <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Cerrar"></button>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="/js/superUsers/crearLibro.js" defer></script>
+</body>
+</html>
