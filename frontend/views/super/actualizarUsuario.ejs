@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Editar Usuario</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+
+<% include ../header.ejs %>
+
+<div class="container-fluid">
+  <div class="row">
+    <% include leftVar.ejs %>
+
+    <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 mt-4">
+
+      <h2 class="mb-4">Editar Usuario</h2>
+
+      
+      <form id="form-editar-usuario" class="card p-4 shadow-sm mb-5">
+        <div class="row g-3">
+          <div class="col-md-6">
+            <label class="form-label">Nombre</label>
+            <input type="text" name="nombre" class="form-control" required>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">Email</label>
+            <input type="email" name="correoElectronico" class="form-control">
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">Contraseña (opcional)</label>
+            <input type="password" name="password" class="form-control" placeholder="Deja en blanco para no cambiarla">
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">NIF</label>
+            <input type="text" name="nif" class="form-control">
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">Fecha de Nacimiento</label>
+            <input type="date" name="fechaNacimiento" class="form-control">
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">Teléfono</label>
+            <input type="text" name="telefono" class="form-control">
+          </div>
+          <div class="col-md-12">
+            <label class="form-label">Dirección</label>
+            <input type="text" name="direccion" class="form-control">
+          </div>
+          <div class="col-md-12">
+            <label class="form-label">Web Personal</label>
+            <input type="text" name="webPersonal" class="form-control">
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">Rol</label>
+            <select name="rol" class="form-select">
+              <option value="user">User</option>
+              <option value="superuser">Superuser</option>
+            </select>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">Membresía Pagada</label>
+            <select name="membresiaPagada" class="form-select">
+              <option value="true">Sí</option>
+              <option value="false">No</option>
+            </select>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">Máximo de Reservas</label>
+            <input type="number" name="maxReservas" class="form-control" min="1">
+          </div>
+        </div>
+        <button type="submit" class="btn btn-success mt-4">Guardar Cambios</button>
+      </form>
+
+      
+      <h3 class="mb-3">Pareja</h3>
+
+      <form id="form-crear-pareja" class="card p-4 shadow-sm mb-5 d-none">
+        <div class="row g-3">
+          <div class="col-md-6">
+            <label class="form-label">Nombre de la Pareja</label>
+            <input type="text" name="nombre" class="form-control">
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">NIF de la Pareja</label>
+            <input type="text" name="nif" class="form-control">
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">Fecha de Nacimiento</label>
+            <input type="date" name="fechaNacimiento" class="form-control">
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">Teléfono</label>
+            <input type="text" name="telefono" class="form-control">
+          </div>
+        </div>
+        <button type="submit" class="btn btn-primary mt-4">Crear Pareja</button>
+      </form>
+
+      <form id="form-editar-pareja" class="card p-4 shadow-sm mb-5 d-none">
+        <div class="row g-3">
+          <div class="col-md-6">
+            <label class="form-label">Nombre de la Pareja</label>
+            <input type="text" name="nombre" class="form-control">
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">NIF de la Pareja</label>
+            <input type="text" name="nif" class="form-control">
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">Fecha de Nacimiento</label>
+            <input type="date" name="fechaNacimiento" class="form-control">
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">Teléfono</label>
+            <input type="text" name="telefono" class="form-control">
+          </div>
+        </div>
+        <button type="submit" class="btn btn-primary mt-4">Actualizar Pareja</button>
+      </form>
+
+     
+      <h3 class="mb-3">Hijo</h3>
+
+      <form id="form-crear-hijo" class="card p-4 shadow-sm mb-5 d-none">
+        <div class="row g-3">
+          <div class="col-md-6">
+            <label class="form-label">Nombre del Hijo</label>
+            <input type="text" name="nombre" class="form-control">
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">NIF del Hijo</label>
+            <input type="text" name="nif" class="form-control">
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">Fecha de Nacimiento</label>
+            <input type="date" name="fechaNacimiento" class="form-control">
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">Teléfono</label>
+            <input type="text" name="telefono" class="form-control">
+          </div>
+        </div>
+        <button type="submit" class="btn btn-primary mt-4">Crear Hijo</button>
+      </form>
+
+      <form id="form-editar-hijo" class="card p-4 shadow-sm mb-5 d-none">
+        <div class="row g-3">
+          <div class="col-md-6">
+            <label class="form-label">Nombre del Hijo</label>
+            <input type="text" name="nombre" class="form-control">
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">NIF del Hijo</label>
+            <input type="text" name="nif" class="form-control">
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">Fecha de Nacimiento</label>
+            <input type="date" name="fechaNacimiento" class="form-control">
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">Teléfono</label>
+            <input type="text" name="telefono" class="form-control">
+          </div>
+        </div>
+        <button type="submit" class="btn btn-primary mt-4">Actualizar Hijo</button>
+      </form>
+
+    </main>
+  </div>
+</div>
+
+
+<div class="position-fixed bottom-0 end-0 p-3" style="z-index: 9999">
+  <div id="toastMensaje" class="toast align-items-center text-white bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">
+    <div class="d-flex">
+      <div class="toast-body" id="toastMensajeTexto">Acción realizada con éxito.</div>
+      <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Cerrar"></button>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="/js/superUsers/actualizarUsuario.js" defer></script>
+
+</body>
+</html>

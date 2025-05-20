@@ -28,6 +28,11 @@ router.get('/libros/crear', verifyTokenFrontend, verifySuperUserFrontend, (req, 
     res.render('super/crearLibro', { title: 'Añadir Libro' });
   });
 
+//ACTUALIZAR USUARIO
+router.get('/usuarios/:id/editar', verifyTokenFrontend, verifySuperUserFrontend, (req, res) => {
+  res.render('super/actualizarUsuario', { title: 'Editar Usuario' });
+});
+
 
 
 

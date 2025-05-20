@@ -312,6 +312,148 @@ router.post('/libros', verifyToken, verifySuperUser, uploadImgs, async (req, res
   }
 });
 
+//AJUSTES
+router.get('/usuarios/:id/pareja', verifyToken, verifySuperUser, async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const pareja = await Pareja.findOne({ where: { UserId: id } });
+
+    if (!pareja) {
+      return res.status(404).json({ error: 'Pareja no encontrada para este usuario' });
+    }
+
+    res.json(pareja);
+  } catch (error) {
+    console.error('Error al obtener la pareja:', error);
+    res.status(500).json({ error: 'Error interno al obtener pareja' });
+  }
+});
+
+
+router.get('/usuarios/:id/hijo', verifyToken, verifySuperUser, async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const hijo = await Hijo.findOne({ where: { UserId: id } });
+
+    if (!hijo) {
+      return res.status(404).json({ error: 'Hijo no encontrado para este usuario' });
+    }
+
+    res.json(hijo);
+  } catch (error) {
+    console.error('Error al obtener el hijo:', error);
+    res.status(500).json({ error: 'Error interno al obtener hijo' });
+  }
+});
+
+router.put('/usuarios/:id', verifyToken, verifySuperUser, async (req, res) => {
+  const { id } = req.params;
+  const updates = req.body;
+
+  console.log("Intentando actualizar usuario con:", updates); 
+
+  try {
+    const usuario = await Usuario.findByPk(id);
+    if (!usuario) return res.status(404).json({ error: 'Usuario no encontrado' });
+
+    await usuario.update(updates);
+    res.json({ message: 'Usuario actualizado correctamente', usuario });
+  } catch (error) {
+    console.error('Error al actualizar usuario:', error); 
+    res.status(500).json({ error: 'Error interno' });
+  }
+});
+
+
+router.post('/parejas', verifyToken, verifySuperUser, async (req, res) => {
+  const { UserId, nombre, nif, fechaNacimiento, telefono } = req.body;
+
+  if (!UserId || !nombre) {
+    return res.status(400).json({ error: 'Faltan datos requeridos para crear pareja' });
+  }
+
+  try {
+    const nuevaPareja = await Pareja.create({
+      UserId,
+      nombre,
+      nif,
+      fechaNacimiento,
+      telefono,
+      imagen: null
+    });
+
+    res.status(201).json({ message: 'Pareja creada correctamente', pareja: nuevaPareja });
+  } catch (error) {
+    console.error('Error al crear pareja:', error);
+    res.status(500).json({ error: 'Error interno al crear pareja' });
+  }
+});
+
+router.put('/parejas/:id', verifyToken, verifySuperUser, async (req, res) => {
+  const { id } = req.params;
+  const updates = req.body;
+
+  try {
+    const pareja = await Pareja.findByPk(id);
+    if (!pareja) {
+      return res.status(404).json({ error: 'Pareja no encontrada' });
+    }
+
+    await pareja.update(updates);
+    res.json({ message: 'Pareja actualizada correctamente', pareja });
+  } catch (error) {
+    console.error('Error actualizando pareja:', error);
+    res.status(500).json({ error: 'Error interno al actualizar pareja' });
+  }
+});
+
+
+
+router.post('/hijos', verifyToken, verifySuperUser, async (req, res) => {
+  const { UserId, nombre, nif, fechaNacimiento, telefono } = req.body;
+
+  if (!UserId || !nombre) {
+    return res.status(400).json({ error: 'Faltan datos requeridos para crear hijo' });
+  }
+
+  try {
+    const nuevoHijo = await Hijo.create({
+      UserId,
+      nombre,
+      nif,
+      fechaNacimiento,
+      telefono,
+      imagen: null
+    });
+
+    res.status(201).json({ message: 'Hijo creado correctamente', hijo: nuevoHijo });
+  } catch (error) {
+    console.error('Error al crear hijo:', error);
+    res.status(500).json({ error: 'Error interno al crear hijo' });
+  }
+});
+
+
+router.put('/hijos/:id', verifyToken, verifySuperUser, async (req, res) => {
+  const { id } = req.params;
+  const updates = req.body;
+
+  try {
+    const hijo = await Hijo.findByPk(id);
+    if (!hijo) {
+      return res.status(404).json({ error: 'Hijo no encontrado' });
+    }
+
+    await hijo.update(updates);
+    res.json({ message: 'Hijo actualizado correctamente', hijo });
+  } catch (error) {
+    console.error('Error actualizando hijo:', error);
+    res.status(500).json({ error: 'Error interno al actualizar hijo' });
+  }
+});
+
 
 
 module.exports = router;
