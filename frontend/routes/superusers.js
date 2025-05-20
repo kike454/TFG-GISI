@@ -11,22 +11,32 @@ router.get('/dashboard', verifyTokenFrontend, verifySuperUserFrontend, (req, res
   });
 });
 
+
+
 router.get('/usuarios', verifyTokenFrontend, verifySuperUserFrontend, (req, res) => {
     res.render('super/usuarios', { title: 'Gestión de Usuarios' });
-  });
+});
+
+
 
 router.get('/usuarios/:id', verifyTokenFrontend, verifySuperUserFrontend, (req, res) => {
     res.render('super/usuario_detalle', { title: 'Detalle de Usuario' });
-  });
+});
+
+
 
 //LIBROS
 router.get('/libros', verifyTokenFrontend, verifySuperUserFrontend, (req, res) => {
     res.render('super/libros', { title: 'Gestión de Libros' });
-  });
+});
+
+
 
 router.get('/libros/crear', verifyTokenFrontend, verifySuperUserFrontend, (req, res) => {
     res.render('super/crearLibro', { title: 'Añadir Libro' });
-  });
+});
+
+
 
 //ACTUALIZAR USUARIO
 router.get('/usuarios/:id/editar', verifyTokenFrontend, verifySuperUserFrontend, (req, res) => {
@@ -34,6 +44,10 @@ router.get('/usuarios/:id/editar', verifyTokenFrontend, verifySuperUserFrontend,
 });
 
 
+//IMPORTAR LIBROS
+router.get('/libros/importar', verifyTokenFrontend, verifySuperUserFrontend, (req, res) => {
+    res.render('super/importarLibros', { title: 'Importar Libros por CSV' });
+});
 
 
 module.exports = router;
