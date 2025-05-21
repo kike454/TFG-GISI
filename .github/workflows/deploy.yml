@@ -25,6 +25,9 @@ jobs:
           echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> backend.env
           echo "DB_HOST=${{ secrets.DB_HOST }}" >> backend.env
           echo "DB_DIALECT=${{ secrets.DB_DIALECT }}" >> backend.env
+          echo "EMAIL_SERVICE=${{ secrets.EMAIL_SERVICE }}" >> backend.env
+          echo "EMAIL_USER=${{ secrets.EMAIL_USER }}" >> backend.env
+          echo "EMAIL_PASS=${{ secrets.EMAIL_PASS }}" >> backend.env
 
           echo "[+] Copying .env to EC2..."
           scp -o StrictHostKeyChecking=no backend.env ${{ secrets.EC2_USER }}@${{ secrets.EC2_IP }}:~/TFG-GISI/backend/.env

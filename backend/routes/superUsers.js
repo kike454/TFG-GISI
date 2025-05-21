@@ -1,8 +1,9 @@
 const express = require('express');
 const router = express.Router();
 const verifyToken = require('../middlewares/verifyToken');
-const verifySuperUser = require('../middlewares/verifySuperUsers'); 
+const verifySuperUser = require('../middlewares/verifySuperUsers');
 const { Usuario, Libro, Reserva, Pareja, Hijo} = require('../database');
+const enviarCorreo = require('../utils/mailer');
 const { v4: uuidv4 } = require('uuid');
 const bcrypt = require('bcrypt');
 
@@ -164,7 +165,22 @@ router.delete('/reservas/:id', verifyToken, verifySuperUser, async (req, res) =>
     reserva.estadoReserva = 'cancelada';
     await reserva.save();
 
+    const usuario = await Usuario.findByPk(reserva.UsuarioId);
     const libro = await Libro.findByPk(reserva.LibroId);
+
+    if (usuario?.correoElectronico && libro) {
+      await enviarCorreo({
+        to: usuario.correoElectronico,
+        subject: `Reserva cancelada - ${libro.titulo}`,
+        html: `
+          <h3>Hola ${usuario.nombre},</h3>
+          <p>Se ha cancelado tu reserva del libro <strong>${libro.titulo}</strong>.</p>
+          <p>Si no solicitaste esta acción, por favor contacta con el equipo de Biblioteca Grema.</p>
+        `
+      });
+    }
+
+
     if (libro) {
       libro.copias += 1;
       await libro.save();
@@ -192,6 +208,25 @@ router.put('/reservas/:id/ampliar', verifyToken, verifySuperUser, async (req, re
 
     reserva.fechaFin = nuevaFecha;
     await reserva.save();
+
+    const usuario = await Usuario.findByPk(reserva.UsuarioId);
+const libro = await Libro.findByPk(reserva.LibroId);
+
+if (usuario?.correoElectronico && libro) {
+  await enviarCorreo({
+    to: usuario.correoElectronico,
+    subject: `Reserva ampliada - ${libro.titulo}`,
+    html: `
+      <h3>Hola ${usuario.nombre},</h3>
+      <p>Tu reserva del libro <strong>${libro.titulo}</strong> ha sido ampliada 7 días más.</p>
+      <ul>
+        <li><strong>Autores:</strong> ${libro.autores || 'Desconocido'}</li>
+        <li><strong>Nueva fecha de finalización:</strong> ${new Date(reserva.fechaFin).toLocaleDateString()}</li>
+      </ul>
+      <p>Gracias por seguir disfrutando de Biblioteca Grema.</p>
+    `
+  });
+}
 
     res.json({ message: 'Reserva ampliada correctamente por superusuario' });
   } catch (error) {
@@ -298,7 +333,7 @@ router.post('/reservas', verifyToken, verifySuperUser, async (req, res) => {
     //console.log("Membresía del usuario XOXOXOXOXOXOXXO:", usuario.membresiaPagada);
 
     if (usuario.membresiaPagada !== true) {
-      console.log(' Bloqueado por membresía'); 
+      console.log(' Bloqueado por membresía');
       return res.status(403).json({ error: 'El usuario no tiene una membresía activa' });
     }
 
@@ -320,7 +355,7 @@ router.post('/reservas', verifyToken, verifySuperUser, async (req, res) => {
       });
     }
 
-    await Reserva.create({
+     const nuevaReserva  = await Reserva.create({
       fechaInicio: new Date(),
       fechaFin: new Date(new Date().setDate(new Date().getDate() + 7)),
       estadoReserva: 'activa',
@@ -332,7 +367,26 @@ router.post('/reservas', verifyToken, verifySuperUser, async (req, res) => {
     libro.copias -= 1;
     await libro.save();
 
+     if (usuario.correoElectronico) {
+      await enviarCorreo({
+        to: usuario.correoElectronico,
+        subject: `Reserva asignada - ${libro.titulo}`,
+        html: `
+          <h3>Hola ${usuario.nombre},</h3>
+          <p>Se te ha asignado una nueva reserva del libro <strong>${libro.titulo}</strong>.</p>
+          <ul>
+            <li><strong>Autores:</strong> ${libro.autores || 'Desconocido'}</li>
+            <li><strong>Fecha de inicio:</strong> ${new Date(nuevaReserva.fechaInicio).toLocaleDateString()}</li>
+            <li><strong>Fecha de fin:</strong> ${new Date(nuevaReserva.fechaFin).toLocaleDateString()}</li>
+            <li><strong>Código de finalización:</strong> ${nuevaReserva.codigoFinalizacion}</li>
+          </ul>
+          <p>Gracias por formar parte de Biblioteca Grema.</p>
+        `
+      });
+    }
+
     res.status(201).json({ message: `Reserva creada para ${usuario.nombre}` });
+
   } catch (error) {
     console.error('Error al crear reserva como superuser:', error);
     res.status(500).json({ error: 'Error interno' });

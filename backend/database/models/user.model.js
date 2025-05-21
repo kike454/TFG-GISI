@@ -37,6 +37,14 @@ module.exports = (sequelize) => {
     maxReservas: {
       type: DataTypes.INTEGER,
       defaultValue: 3
+    },
+    resetToken: {
+      type: DataTypes.STRING,
+      allowNull: true
+    },
+    resetTokenExp: {
+      type: DataTypes.BIGINT,
+      allowNull: true
     }
   }, {
     tableName: 'usuarios',

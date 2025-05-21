@@ -29,7 +29,13 @@ router.get('/ajustes', verifyTokenFrontend, (req, res) => {
   res.render('ajustes', { title: 'Ajustes' });
 });
 
+router.get('/reset-password/:token', (req, res) => {
+  const { token } = req.params;
+  res.render('resetPassword', { token });
+});
 
-
+router.get('/forgot-password', (req, res) => {
+  res.render('forgotPassword');
+});
 
 module.exports = router;

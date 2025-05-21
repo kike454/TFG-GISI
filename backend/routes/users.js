@@ -4,8 +4,82 @@ const { Usuario, Pareja, Hijo } = require('../database');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const verifyToken = require('../middlewares/verifyToken');
+const crypto = require('crypto');
+const { Op } = require('sequelize');
+const enviarCorreo = require('../utils/mailer');
 
 const JWT_SECRET = 'una-clave-super-secreta';
+
+
+router.post('/forgot-password', async (req, res) => {
+  const { correoElectronico } = req.body;
+
+  try {
+    const usuario = await Usuario.findOne({ where: { correoElectronico } });
+
+    if (!usuario) {
+      return res.status(404).json({ error: 'Correo no registrado' });
+    }
+
+    const token = crypto.randomBytes(32).toString('hex');
+    const expiracion = Date.now() + 1000 * 60 * 15; // 15 minutos
+
+    await usuario.update({
+      resetToken: token,
+      resetTokenExp: expiracion
+    });
+
+    const link = `http://localhost:5000/reset-password/${token}`;
+
+    await enviarCorreo({
+      to: correoElectronico,
+      subject: 'Restablecer contraseña - Biblioteca Grema',
+      html: `
+        <h3>Hola ${usuario.nombre},</h3>
+        <p>Haz clic en el siguiente enlace para restablecer tu contraseña:</p>
+        <a href="${link}">${link}</a>
+        <p><strong>Este enlace expirará en 15 minutos.</strong></p>
+        <p>Si no solicitaste esto, puedes ignorar el mensaje.</p>
+      `
+    });
+
+    res.json({ message: 'Correo de recuperación enviado' });
+  } catch (error) {
+    console.error('Error en forgot-password:', error);
+    res.status(500).json({ error: 'Error interno al enviar el correo' });
+  }
+});
+
+
+
+router.post('/reset-password/:token', async (req, res) => {
+  const { token } = req.params;
+  const { nuevaPassword } = req.body;
+
+  try {
+    const usuario = await Usuario.findOne({
+      where: {
+        resetToken: token,
+        resetTokenExp: { [Op.gt]: Date.now() }
+      }
+    });
+
+    if (!usuario) {
+      return res.status(400).json({ error: 'Token inválido o expirado' });
+    }
+
+    await usuario.update({
+      password: nuevaPassword,
+      resetToken: null,
+      resetTokenExp: null
+    });
+
+    res.json({ message: 'Contraseña actualizada correctamente' });
+  } catch (error) {
+    console.error('Error al restablecer contraseña:', error);
+    res.status(500).json({ error: 'Error interno' });
+  }
+});
 
 
 router.post('/register', async (req, res) => {
