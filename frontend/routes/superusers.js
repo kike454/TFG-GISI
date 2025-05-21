@@ -17,7 +17,10 @@ router.get('/usuarios', verifyTokenFrontend, verifySuperUserFrontend, (req, res)
     res.render('super/usuarios', { title: 'Gestión de Usuarios' });
 });
 
-
+//USUARIOS IMPORTAR, se pone arriba para evitar colision entre rutas
+router.get('/usuarios/importar', verifyTokenFrontend, verifySuperUserFrontend, (req, res) => {
+  res.render('super/importarUsuarios', { title: 'Importar Usuarios por CSV' });
+  });
 
 router.get('/usuarios/:id', verifyTokenFrontend, verifySuperUserFrontend, (req, res) => {
     res.render('super/usuario_detalle', { title: 'Detalle de Usuario' });

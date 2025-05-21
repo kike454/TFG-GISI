@@ -4,6 +4,7 @@ const verifyToken = require('../middlewares/verifyToken');
 const verifySuperUser = require('../middlewares/verifySuperUsers'); 
 const { Usuario, Libro, Reserva, Pareja, Hijo} = require('../database');
 const { v4: uuidv4 } = require('uuid');
+const bcrypt = require('bcrypt');
 
 const multer = require('multer');
 //const csv = require('csv-parser');
@@ -35,6 +36,9 @@ router.get('/usuarios', verifyToken, verifySuperUser, async (req, res) => {
 });
 
 
+
+
+
 router.delete('/usuarios/:id', verifyToken, verifySuperUser, async (req, res) => {
   const { id } = req.params;
 
@@ -53,6 +57,66 @@ router.delete('/usuarios/:id', verifyToken, verifySuperUser, async (req, res) =>
 });
 
 
+
+router.post('/users/import', verifyToken, verifySuperUser, upload.single('file'), async (req, res) => {
+  if (!req.file) {
+    return res.status(400).json({ error: 'No se proporcionó archivo Excel.' });
+  }
+
+  try {
+    const workbook = xlsx.readFile(req.file.path);
+    const hoja = workbook.Sheets[workbook.SheetNames[0]];
+    const data = xlsx.utils.sheet_to_json(hoja, { defval: null });
+
+    for (const userData of data) {
+
+      if (!userData.nombre || !userData.password) continue;
+
+      const usuario = await Usuario.create({
+        nombre: userData.nombre?.toString().trim(),
+        password: await bcrypt.hash(userData.password.toString(), 10),
+        nif: userData.nif?.toString().trim() || null,
+        fechaNacimiento: userData.fechaNacimiento ? new Date(userData.fechaNacimiento) : null,
+        telefono: userData.telefono?.toString().trim() || null,
+        direccion: userData.direccion?.toString().trim() || null,
+        correoElectronico: userData.correoElectronico?.toString().trim() || null,
+        webPersonal: userData.webPersonal?.toString().trim() || null,
+        rol: userData.rol?.toString().trim() || 'user',
+        membresiaPagada: userData.membresiaPagada === 'true' || userData.membresiaPagada === true,
+        maxReservas: parseInt(userData.maxReservas) || 3
+      });
+
+      if (userData.parejaNombre) {
+        await Pareja.create({
+          UserId: usuario.id,
+          nombre: userData.parejaNombre?.toString().trim(),
+          nif: userData.parejaNif?.toString().trim(),
+          fechaNacimiento: userData.parejaFechaNacimiento ? new Date(userData.parejaFechaNacimiento) : null,
+          telefono: userData.parejaTelefono?.toString().trim() || null,
+          imagen: null
+        });
+      }
+
+      if (userData.hijoNombre) {
+        await Hijo.create({
+          UserId: usuario.id,
+          nombre: userData.hijoNombre?.toString().trim(),
+          nif: userData.hijoNif?.toString().trim(),
+          fechaNacimiento: userData.hijoFechaNacimiento ? new Date(userData.hijoFechaNacimiento) : null,
+          telefono: userData.hijoTelefono?.toString().trim() || null,
+          imagen: null
+        });
+      }
+    }
+
+    fs.unlinkSync(req.file.path);
+    res.status(201).json({ message: 'Usuarios importados correctamente.' });
+
+  } catch (error) {
+    console.error('Error al importar usuarios:', error);
+    res.status(500).json({ error: 'Error interno durante la importación.' });
+  }
+});
 
 router.get('/usuarios/:id/reservas', verifyToken, verifySuperUser, async (req, res) => {
   const { id } = req.params;
@@ -493,5 +557,11 @@ router.post('/libros/import', verifyToken, verifySuperUser, upload.single('file'
     res.status(500).json({ error: 'Error interno durante la importación.' });
   }
 });
+
+
+
+//por subir
+
+
 
 module.exports = router;

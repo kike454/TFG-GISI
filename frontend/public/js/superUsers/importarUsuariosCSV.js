@@ -1,6 +1,6 @@
 const apiBase = window.location.hostname.includes('localhost')
   ? 'http://localhost:3001'
-  : 'http://tu-dominio.com:3001';
+  : 'http://ec2-34-201-229-162.compute-1.amazonaws.com:3001';
 
 document.addEventListener('DOMContentLoaded', () => {
   const form = document.getElementById('form-importar-usuarios');
@@ -10,21 +10,31 @@ document.addEventListener('DOMContentLoaded', () => {
     e.preventDefault();
 
     const fileInput = document.getElementById('csvUsuarios');
-    if (!fileInput.files.length) {
-      mensaje.textContent = "Por favor selecciona un archivo CSV.";
+    const file = fileInput.files[0];
+
+    if (!file) {
+      mensaje.className = 'text-danger';
+      mensaje.textContent = "Por favor selecciona un archivo Excel (.xlsx).";
+      return;
+    }
+
+    if (!file.name.endsWith('.xlsx')) {
+      mensaje.className = 'text-danger';
+      mensaje.textContent = "Solo se permiten archivos Excel (.xlsx).";
       return;
     }
 
     const formData = new FormData();
-    formData.append('file', fileInput.files[0]);
+    formData.append('file', file);
 
     const token = localStorage.getItem('token');
 
     try {
-      const response = await fetch(`${apiBase}/api/superusers/usuarios/import`, {
+      const response = await fetch(`${apiBase}/api/superusers/users/import`, {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${token}`,
+          'Authorization': `Bearer ${token}`
+
         },
         body: formData
       });
@@ -34,6 +44,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (response.ok) {
         mensaje.className = 'text-success';
         mensaje.textContent = "Usuarios importados correctamente.";
+        form.reset();
       } else {
         mensaje.className = 'text-danger';
         mensaje.textContent = result.error || "Error al importar usuarios.";
