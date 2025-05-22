@@ -15,6 +15,14 @@ var app = express();
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
+app.use((req, res, next) => {
+  const isLocal = req.hostname.includes('localhost');
+  res.locals.apiBase = isLocal
+    ? 'http://localhost:3001'
+    : 'https://grema.store';
+  next();
+});
+
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
