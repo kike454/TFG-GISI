@@ -29,8 +29,8 @@ sessionStore.sync();
 */
 const allowedOrigins = [
   'http://localhost:5000',
-  'http://34.201.229.162:5000',
-  'http://ec2-34-201-229-162.compute-1.amazonaws.com:5000'
+  'https://grema.store',
+  'https://www.grema.store'
 ];
 
 
