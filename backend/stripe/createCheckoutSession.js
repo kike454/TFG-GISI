@@ -15,7 +15,7 @@ router.post('/create-checkout-session', async (req, res) => {
         price: 'price_1RS262RSBvIVgG5k4xBnxEVw',
         quantity: 1
       }],
-      success_url: 'https://grema.store:5000/membresia?success=true',
+      success_url: 'https://grema.store/membresia?success=true',
       cancel_url: 'https://grema.store/membresia?success=false',
       customer_email: email
     });
