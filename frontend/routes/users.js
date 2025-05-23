@@ -38,4 +38,15 @@ router.get('/forgot-password', (req, res) => {
   res.render('forgotPassword');
 });
 
+router.get('/membresia', verifyTokenFrontend, (req, res) => {
+  const usuario = res.locals.session?.user;
+  console.log(usuario);
+
+  if (!usuario) {
+    return res.redirect('/login');
+  }
+
+  res.render('membership', { usuario });
+});
+
 module.exports = router;

@@ -15,6 +15,8 @@ const usersRouter = require('./routes/users');
 const booksRouter = require('./routes/books');
 const reservasRouter = require('./routes/reservas');
 const superUsersRouter = require('./routes/superUsers');
+const stripeCheckout = require('./stripe/createCheckoutSession');
+const stripeWebhook = require('./stripe/webhooks');
 
 const app = express();
 
@@ -45,7 +47,7 @@ app.use(cors({
   credentials: true
 }));
 
-
+app.use('/api/stripe', stripeWebhook);
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
@@ -72,6 +74,8 @@ app.use('/api/users', usersRouter);
 app.use('/api/books', booksRouter);
 app.use('/api/reservas', reservasRouter);
 app.use('/api/superusers', superUsersRouter);
+app.use('/api/stripe', stripeCheckout);
+
 
 // 404 y error handler
 app.use(function(req, res, next) {

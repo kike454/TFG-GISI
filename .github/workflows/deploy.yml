@@ -28,6 +28,8 @@ jobs:
           echo "EMAIL_SERVICE=${{ secrets.EMAIL_SERVICE }}" >> backend.env
           echo "EMAIL_USER=${{ secrets.EMAIL_USER }}" >> backend.env
           echo "EMAIL_PASS=${{ secrets.EMAIL_PASS }}" >> backend.env
+          echo "STRIPE_SECRET_KEY=${{ secrets.STRIPE_SECRET_KEY }}" >> backend.env
+          echo "STRIPE_WEBHOOK_SECRET=${{ secrets.STRIPE_WEBHOOK_SECRET }}" >> backend.env
 
           echo "[+] Copying .env to EC2..."
           scp -o StrictHostKeyChecking=no backend.env ${{ secrets.EC2_USER }}@${{ secrets.EC2_IP }}:~/TFG-GISI/backend/.env

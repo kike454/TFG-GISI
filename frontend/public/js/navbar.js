@@ -7,9 +7,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   navLinks.innerHTML = '';
 
-
-
-if (token) {
+  if (token) {
     try {
       const res = await fetch(`${apiBase}/api/users/session-info`, {
         headers: { 'Authorization': `Bearer ${token}` }
@@ -32,6 +30,10 @@ if (token) {
         ${data.session.rol === 'superuser' ? `
         <li class="nav-item">
           <a class="nav-link" href="/super/dashboard">Panel Admin</a>
+        </li>` : ''}
+        ${!data.session.membresiaPagada ? `
+        <li class="nav-item">
+          <a class="nav-link" href="/membresia">Membresía</a>
         </li>` : ''}
         <li class="nav-item">
           <a class="nav-link" id="logoutLink" href="#">Logout</a>

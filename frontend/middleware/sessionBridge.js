@@ -1,7 +1,7 @@
 const getApiBase = (req) => {
   return req.hostname.includes('localhost')
     ? 'http://localhost:3001'
-    : 'http://34.201.229.162:3001';
+    : 'https://grema.store';
 };
 
 async function sessionBridge(req, res, next) {

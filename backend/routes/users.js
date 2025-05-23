@@ -137,9 +137,29 @@ router.post('/login', async (req, res) => {
 });
 
 
-router.get('/session-info', verifyToken, (req, res) => {
-  res.json({ session: req.user });
+router.get('/session-info', verifyToken, async (req, res) => {
+  try {
+    const user = await Usuario.findByPk(req.user.id);
+
+    if (!user) {
+      return res.status(404).json({ error: 'Usuario no encontrado' });
+    }
+
+    res.json({
+      session: {
+        id: user.id,
+        nombre: user.nombre,
+        rol: user.rol,
+        correoElectronico: user.correoElectronico,
+        membresiaPagada: user.membresiaPagada
+      }
+    });
+  } catch (error) {
+    console.error('Error al obtener información de sesión:', error);
+    res.status(500).json({ error: 'Error interno' });
+  }
 });
+
 
 
 router.post('/logout', (req, res) => {
