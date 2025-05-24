@@ -5,14 +5,18 @@ const stripe = Stripe(process.env.STRIPE_SECRET_KEY);
 const bodyParser = require('body-parser');
 const { Usuario } = require('../database');
 
+
 router.post('/webhooks', bodyParser.raw({ type: 'application/json' }), async (req, res) => {
   const sig = req.headers['stripe-signature'];
   let event;
 
+  console.log('[Webhook] Intentando verificar firma');
+
   try {
     event = stripe.webhooks.constructEvent(req.body, sig, process.env.STRIPE_WEBHOOK_SECRET);
+    console.log('[Webhook] Firma verificada correctamente');
   } catch (err) {
-    console.error('Webhook error:', err.message);
+    console.error('[Webhook] Error de firma:', err.message);
     return res.status(400).send(`Webhook Error: ${err.message}`);
   }
 
@@ -20,26 +24,25 @@ router.post('/webhooks', bodyParser.raw({ type: 'application/json' }), async (re
     const session = event.data.object;
     const email = session.customer_email;
 
+    console.log(`[Webhook] Evento de pago recibido para: ${email}`);
+
     try {
       const usuario = await Usuario.findOne({ where: { correoElectronico: email } });
 
       if (usuario) {
         usuario.membresiaPagada = true;
-        console.log(`Antes de guardar: ${usuario.membresiaPagada}`);
         await usuario.save();
-        console.log(`Después de guardar: ${usuario.membresiaPagada}`);
-        await usuario.reload();
-        console.log(`Confirmación en BD: ${usuario.membresiaPagada}`);
-        console.log(`Usuario ${email} actualizado con membresía pagada.`);
+        console.log(`[Webhook] Membresía activada para ${email}`);
       } else {
-        console.warn(`No se encontró usuario con email: ${email}`);
+        console.warn(`[Webhook] Usuario no encontrado: ${email}`);
       }
     } catch (err) {
-      console.error('Error actualizando usuario:', err.message);
+      console.error('[Webhook] Error al actualizar usuario:', err.message);
+      return res.status(500).send('Error interno al actualizar usuario');
     }
   }
 
-  res.json({ received: true });
+  res.status(200).json({ received: true });
 });
 
 module.exports = router;
