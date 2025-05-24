@@ -4,52 +4,64 @@ document.addEventListener('DOMContentLoaded', () => {
     e.preventDefault();
     const email = form.email.value;
 
-    try {
-      if (!email || email.trim() === '') {
-        alert("El email no está definido. No se puede iniciar la suscripción.");
-        return;
-      }
+    if (!email || email.trim() === '') {
+      alert("El email no está definido. No se puede iniciar la suscripción.");
+      return;
+    }
 
-      const url = typeof apiBase !== 'undefined'
+    try {
+      const checkoutUrl = (typeof apiBase !== 'undefined')
         ? `${apiBase}/api/stripe/create-checkout-session`
         : '/api/stripe/create-checkout-session';
 
-      const response = await fetch(url, {
+      const response = await fetch(checkoutUrl, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email })
       });
 
       const data = await response.json();
-
       if (data.url) {
         window.location.href = data.url;
       } else {
         alert('Error iniciando la suscripción');
       }
     } catch (err) {
-      console.error('Error:', err);
+      console.error('Error al llamar al checkout:', err);
+      alert('Ocurrió un error al iniciar el pago');
     }
   });
 
+
   const params = new URLSearchParams(window.location.search);
   if (params.get("success") === "true") {
-    fetch(`${apiBase}/api/users/session-info`, {
+
+    window.history.replaceState({}, '', window.location.pathname);
+
+
+    const sessionUrl = (typeof apiBase !== 'undefined')
+      ? `${apiBase}/api/users/session-info`
+      : '/api/users/session-info';
+
+
+    fetch(sessionUrl, {
       method: 'GET',
-      headers: {
-        'Authorization': 'Bearer ' + localStorage.getItem('token')
-      },
-      credentials: 'include'
+      credentials: 'include',
+      headers: { 'Content-Type': 'application/json' }
     })
       .then(res => res.json())
       .then(data => {
         if (data.session?.membresiaPagada) {
+
           localStorage.setItem('usuario', JSON.stringify(data.session));
-          location.reload();
+
+          window.location.reload();
         } else {
-          console.warn('Pago realizado pero la membresía no está activa en la sesión.');
+          console.warn('Pago recibido pero membresía aún no marcada en la sesión');
         }
       })
-      .catch(err => console.error('Error al refrescar sesión:', err));
+      .catch(err => {
+        console.error('Error al refrescar sesión:', err);
+      });
   }
 });

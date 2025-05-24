@@ -1,5 +1,3 @@
-
-
 const createError = require('http-errors');
 const express = require('express');
 const path = require('path');
@@ -9,6 +7,8 @@ const cors = require('cors');
 //const session = require('express-session');
 //const SequelizeStore = require('connect-session-sequelize')(session.Store);
 const { sequelize } = require('./database');
+require('dotenv').config();
+
 
 const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/users');
@@ -18,17 +18,11 @@ const superUsersRouter = require('./routes/superUsers');
 const stripeCheckout = require('./stripe/createCheckoutSession');
 const stripeWebhook = require('./stripe/webhooks');
 
+//console.log('STRIPE_WEBHOOK_SECRET:', process.env.STRIPE_WEBHOOK_SECRET);
+
 const app = express();
 
-/*
-const sessionStore = new SequelizeStore({
-  db: sequelize,
-  checkExpirationInterval: 15 * 60 * 1000,
-  expiration: 24 * 60 * 60 * 1000,
-});
-sessionStore.sync();
 
-*/
 const allowedOrigins = [
   'http://localhost:5000',
   'https://grema.store',
@@ -54,20 +48,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-/*
-app.use(session({
-  secret: 'una-clave-super-secreta',
-  store: sessionStore,
-  resave: false,
-  saveUninitialized: false,
-  cookie: {
-    maxAge: 24 * 60 * 60 * 1000,
-    secure: false, 
-    httpOnly: true,
-    sameSite: 'lax' 
-  }
-}));
-*/
+
 
 app.use('/', indexRouter);
 app.use('/api/users', usersRouter);

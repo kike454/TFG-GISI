@@ -7,7 +7,14 @@ const { Usuario } = require('../database');
 
 
 router.post('/webhooks', bodyParser.raw({ type: 'application/json' }), async (req, res) => {
+console.log('  LLEGÓ PETICIÓN A /api/stripe/webhooks');
+console.log('› RAW BODY BYTES:', req.body.length);
+ console.log('Headers recibidas:\n', JSON.stringify(req.headers, null, 2));
+ console.log('Raw body length:', req.body.length, 'bytes');
+console.log('-- INICIO BODY --\n', req.body.toString('utf8'), '\n-- FIN BODY --');
+
   const sig = req.headers['stripe-signature'];
+console.log('Stripe-Signature header:', sig);
   let event;
 
   console.log('[Webhook] Intentando verificar firma');
