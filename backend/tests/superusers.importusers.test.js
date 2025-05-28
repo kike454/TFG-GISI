@@ -3,9 +3,10 @@ const { expect } = require('chai');
 const app = require('../app');
 const fs = require('fs');
 const path = require('path');
-const { Usuario, Libro } = require('../database');
+const { Usuario, Pareja, Hijo } = require('../database');
+const { Op } = require('sequelize');
 
-describe('SuperUsers Panel - Importación de Libros (Excel)', () => {
+describe('SuperUsers Panel - Importación de Usuarios (Excel)', () => {
   let token;
 
   before(async () => {
@@ -14,9 +15,8 @@ describe('SuperUsers Panel - Importación de Libros (Excel)', () => {
       password: 'TestPassword123!',
       role: 'superuser',
       correoElectronico: `super_${Date.now()}@example.com`,
-      nif: '99998888A'
+      nif: '12345678Z'
     };
-
 
     await request(app).post('/api/users/register').send(mockSuperUser);
 
@@ -27,34 +27,50 @@ describe('SuperUsers Panel - Importación de Libros (Excel)', () => {
     token = login.body.token;
   });
 
-  it('Debería importar libros desde un archivo Excel', async () => {
-    const filePath = path.join(__dirname, 'fixtures', 'libros_test.xlsx');
+  it('Debería importar usuarios desde un archivo Excel', async function () {
+  this.timeout(5000);
 
-    const res = await request(app)
-      .post('/api/superusers/libros/import')
-      .set('Authorization', `Bearer ${token}`)
-      .attach('file', filePath);
+  const filePath = path.join(__dirname, 'fixtures', 'usuarios_import.xlsx');
 
-    expect(res.status).to.equal(201);
-    expect(res.body).to.have.property('message').that.includes('importados');
-  });
+  const res = await request(app)
+    .post('/api/superusers/users/import')
+    .set('Authorization', `Bearer ${token}`)
+    .attach('file', filePath);
+
+  expect(res.status).to.equal(201);
+  expect(res.body).to.have.property('message').that.includes('Usuarios importados');
 });
 
-after(async () => {
-  console.log('Limpiando libros de prueba...');
-  await Libro.destroy({
-    where: {
-      titulo: {
-        [require('sequelize').Op.like]: 'LibroTest%' // ajusta al título de tus pruebas
-      }
-    }
-  });
+  after(async () => {
+    console.log(' Limpiando usuarios, parejas e hijos de prueba...');
 
-  await Usuario.destroy({
-    where: {
-      nombre: {
-        [require('sequelize').Op.like]: 'superuser_%'
+    await Pareja.destroy({
+      where: {
+        nombre: {
+          [Op.like]: 'Ana Gomez%'
+        }
       }
-    }
+    });
+
+    await Hijo.destroy({
+      where: {
+        nombre: {
+          [Op.like]: 'Lucas%'
+        }
+      }
+    });
+
+    await Usuario.destroy({
+      where: {
+        nombre: {
+          [Op.or]: [
+            { [Op.like]: 'juan.perez' },
+            { [Op.like]: 'maria.lopez' },
+            { [Op.like]: 'carlos.sanchez' },
+            { [Op.like]: 'superuser_%' }
+          ]
+        }
+      }
+    });
   });
 });

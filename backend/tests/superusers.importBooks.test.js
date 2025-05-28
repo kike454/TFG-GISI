@@ -14,7 +14,7 @@ describe('SuperUsers Panel - Importación de Libros (Excel)', () => {
       password: 'TestPassword123!',
       role: 'superuser',
       correoElectronico: `super_${Date.now()}@example.com`,
-      nif: '99998888A'
+      nif: '12345678Z'
     };
 
 

@@ -16,11 +16,12 @@ const {
       
 
       const usuarios = await Usuario.bulkCreate([
-        { nombre: 'admin', password: 'admin', rol: 'superuser', correoElectronico: 'admin@email.com', nif: '00000000X', maxReservas: 3 },
-        { nombre: 'kike', password: '1234', rol: 'superuser', correoElectronico: 'kike@email.com', nif: '00000001X', maxReservas: 3 },
-        { nombre: 'admin1', password: '1234', rol: 'superuser', correoElectronico: 'admin1@email.com', nif: '00000009Z', maxReservas: 3 },
-        { nombre: 'carlos', password: '1234', rol: 'user', correoElectronico: 'carlos@email.com', nif: '00000002X', maxReservas: 3 },
-        { nombre: 'paloma', password: '1234', rol: 'user', correoElectronico: 'paloma@email.com', nif: '00000003X', maxReservas: 3 }
+        { nombre: 'admin', password: 'TestPassword123!', rol: 'superuser', correoElectronico: 'admin@email.com', nif: '12345678Z', maxReservas: 3 },
+        { nombre: 'kike', password: 'TestPassword123!', rol: 'superuser', correoElectronico: 'kike@email.com', nif: '12345678Z', maxReservas: 3 },
+        { nombre: 'admin1', password: 'TestPassword123!', rol: 'superuser', correoElectronico: 'admin1@email.com', nif: '12345678Z', maxReservas: 3 },
+        { nombre: 'carlos', password: 'TestPassword123!', rol: 'user', correoElectronico: 'carlos@email.com', nif: '12345678Z', maxReservas: 3 },
+        { nombre: 'paloma', password: 'TestPassword123!', rol: 'user', correoElectronico: 'paloma@email.com', nif: '12345678Z', maxReservas: 3 },
+        { nombre: 'stripeUser',password: 'TestPassword123!', rol: 'user', correoElectronico: 'test@example.com', nif: '12345678Z', maxReservas: 3, membresiaPagada: false}
       ], { individualHooks: true });
   
       

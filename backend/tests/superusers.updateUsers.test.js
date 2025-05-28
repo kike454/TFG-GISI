@@ -12,7 +12,7 @@ describe('SuperUsers Panel - Actualización de Usuario, Pareja e Hijo', () => {
     password: 'TestPassword123!',
     role: 'superuser',
     correoElectronico: `super_${Date.now()}@example.com`,
-    nif: '98765432Z'
+    nif: '12345678Z'
   };
 
   before(async () => {

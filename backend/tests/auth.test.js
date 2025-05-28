@@ -11,7 +11,7 @@ describe(' API Users', () => {
     username: usernameTest,
     password: 'TestPassword123!',
     correoElectronico: `${usernameTest}@example.com`,
-    nif: '12345678X',
+    nif: '12345678Z',
     role: 'user'
   };
 

@@ -90,6 +90,34 @@ router.post('/reset-password/:token', async (req, res) => {
 router.post('/register', async (req, res) => {
   const { username, password, role, correoElectronico, nif } = req.body;
 
+  const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/;
+  if (!passwordRegex.test(password)) {
+    return res.status(400).json({ error: 'La contraseña debe tener al menos 8 caracteres, una mayúscula, una minúscula, un número y un símbolo.' });
+  }
+
+
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(correoElectronico)) {
+    return res.status(400).json({ error: 'Correo electrónico no válido.' });
+  }
+
+
+ function validarDNI(dni) {
+      const letras = 'TRWAGMYFPDXBNJZSQVHLCKE';
+
+      if (!/^\d{8}[A-Z]$/i.test(dni)) return false;
+
+      const numero = parseInt(dni.slice(0, 8), 10);
+      const letra = dni[8].toUpperCase();
+      const letraEsperada = letras[numero % 23];
+
+      return letra === letraEsperada;
+}
+
+  if (!validarDNI(nif)) {
+      return res.status(400).json({ error: 'El DNI no es válido. La letra no corresponde.' });
+  }
+
   try {
     const existing = await Usuario.findOne({ where: { nombre: username } });
     if (existing) {

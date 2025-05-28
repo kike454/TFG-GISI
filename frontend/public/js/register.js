@@ -20,6 +20,32 @@ document.getElementById("registerForm").addEventListener("submit", async (e) => 
   const correoElectronico = document.getElementById("email").value;
   const nif = document.getElementById("nif").value;
 
+  const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/;
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  function validarDNI(dni) {
+      const letras = 'TRWAGMYFPDXBNJZSQVHLCKE';
+      if (!/^\d{8}[A-Z]$/i.test(dni)) return false;
+          const numero = parseInt(dni.slice(0, 8), 10);
+          const letra = dni[8].toUpperCase();
+          return letras[numero % 23] === letra;
+  }
+
+
+  if (!passwordRegex.test(password)) {
+  mostrarToast("Contraseña insegura: usa 8+ caracteres, mayúscula, número y símbolo.", "danger");
+  return;
+}
+
+if (!emailRegex.test(correoElectronico)) {
+  mostrarToast("Correo electrónico no válido", "danger");
+  return;
+}
+
+if (!validarDNI(nif)) {
+  mostrarToast("DNI no válido: la letra no coincide con los números", "danger");
+  return;
+}
+
   try {
     const response = await fetch(`${apiBase}/api/users/register`, {
       method: "POST",
