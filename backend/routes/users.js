@@ -28,8 +28,13 @@ router.post('/forgot-password', async (req, res) => {
       resetToken: token,
       resetTokenExp: expiracion
     });
+    const host = req.get('host');
+    const protocol = req.protocol;
+    const baseUrl = host.includes('localhost')
+      ? `${protocol}://localhost:5000`
+      : `${protocol}://${host}`;
 
-    const link = `http://localhost:5000/reset-password/${token}`;
+    const link = `${baseUrl}/reset-password/${token}`
 
     await enviarCorreo({
       to: correoElectronico,

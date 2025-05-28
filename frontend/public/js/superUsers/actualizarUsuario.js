@@ -49,7 +49,16 @@ document.addEventListener("DOMContentLoaded", async () => {
     formUsuario.direccion.value = usuario.direccion || "";
     formUsuario.webPersonal.value = usuario.webPersonal || "";
     formUsuario.rol.value = usuario.rol;
-    formUsuario.membresiaPagada.value = String(usuario.membresiaPagada);
+    //formUsuario.membresiaPagada.value = String(usuario.membresiaPagada);
+
+    if (usuario.membresiaPagada === true) {
+        const btnPago = document.getElementById("btn-pagar-membresia");
+        btnPago.disabled = true;
+        btnPago.textContent = "Membresía ya activa";
+        btnPago.classList.remove("btn-primary");
+        btnPago.classList.add("btn-secondary");
+    }
+
     formUsuario.maxReservas.value = usuario.maxReservas;
 
 
@@ -293,5 +302,35 @@ document.addEventListener("DOMContentLoaded", async () => {
     } catch (err) {
       mostrarToast("Error de red al actualizar hijo", "danger");
     }
+  
   });
+  document.getElementById("btn-pagar-membresia").addEventListener("click", async () => {
+  const email = formUsuario.correoElectronico.value.trim();
+  if (!email) {
+    mostrarToast("El correo electrónico no está definido", "warning");
+    return;
+  }
+
+  try {
+    const response = await fetch(`${apiBase}/api/stripe/create-checkout-session`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`
+      },
+      body: JSON.stringify({ email })
+    });
+
+    const data = await response.json();
+    if (data.url) {
+      window.open(data.url, '_blank');
+    } else {
+      mostrarToast("Error iniciando el pago", "danger");
+    }
+  } catch (err) {
+    console.error("Error al iniciar pago desde el panel de admin:", err);
+    mostrarToast("Error de red al iniciar pago", "danger");
+  }
+});
+
 });
