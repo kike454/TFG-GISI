@@ -3,12 +3,15 @@
 ![CI/CD](https://github.com/kike454/TFG-GISI/actions/workflows/deploy.yml/badge.svg)
 
 ## Descripción
-Trabajo de Fin de Grado centrado en el despliegue web de una aplicación para la gestión de reservas de libros mediante membresía.
+
+Trabajo de Fin de Grado centrado en el desarrollo y despliegue de una API REST para la gestión de reservas de libros mediante membresía.  
+Incluye autenticación, gestión de pagos y notificaciones por correo.
 
 ## Temática
-Migración de base de datos de **MySQL** a **PostgreSQL** con despliegue en AWS utilizando una arquitectura de 3 capas y CI/CD con GitHub Actions.
 
-## Built with
+Migración de base de datos de **MySQL** a **PostgreSQL** con despliegue en **AWS EC2** utilizando arquitectura de **tres capas** y despliegue continuo (**CD**) mediante **GitHub Actions**.
+
+## Tecnologías utilizadas
 
 <p align="center">
   <img alt="Node.js" src="https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=node.js&logoColor=white" />&nbsp;
@@ -19,16 +22,72 @@ Migración de base de datos de **MySQL** a **PostgreSQL** con despliegue en AWS 
   <img alt="PostgreSQL" src="https://img.shields.io/badge/PostgreSQL-316192?style=for-the-badge&logo=postgresql&logoColor=white" />
 </p>
 
-## Autor
-**Enrique Collado Muñoz**
-Grado en Ingeniería de Sistemas de la Información
+## Instalación y despliegue local
+
+### Linux
+
+1. Clona el repositorio y entra en la carpeta del proyecto:
+
+    ```bash
+    git clone https://github.com/kike454/TFG-GISI.git
+    cd TFG-GISI
+    ```
+
+2. En una terminal, ejecuta los siguientes comandos para iniciar el **frontend**:
+
+    ```bash
+    cd frontend
+    npm install
+    npm start
+    ```
+
+3. En otra terminal, ejecuta los siguientes comandos para iniciar el **backend**:
+
+    ```bash
+    cd backend
+    npm install
+    npm run seed
+    npm start
+    ```
+
+4. Abre tu navegador y accede a:
+
+    ```
+    http://localhost:5000
+    ```
+
+> **Nota importante**:  
+> En el caso de que el tribunal quiera probar la aplicación en local, no funcionará directamente ya que el archivo `.env` (que contiene las variables de entorno requeridas) no está incluido.  
+>  
+> Para obtener este archivo, por favor ponte en contacto conmigo a través del correo electrónico de la universidad.
+
+---
+
+**Enrique Collado Muñoz**  
+Grado en Ingeniería de Sistemas de la Información  
 Universidad CEU San Pablo
 
-## Licencia
-Este proyecto está licenciado bajo la licencia **Creative Commons Atribución-NoComercial-CompartirIgual 4.0 Internacional (CC BY-NC-SA 4.0)**.
+---
 
-![Licencia Creative Commons](https://licensebuttons.net/l/by-nc-sa/4.0/88x31.png)
-[Ver la licencia completa](https://creativecommons.org/licenses/by-nc-sa/4.0/)
+```text
+MIT License
 
-## Estado del despliegue
-Este commit se utiliza para probar el correcto funcionamiento del CI/CD en EC2 mediante GitHub Actions v10.
+Copyright (c) 2025 Enrique Collado Muñoz
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
