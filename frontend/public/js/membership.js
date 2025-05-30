@@ -47,7 +47,8 @@ document.addEventListener('DOMContentLoaded', () => {
     fetch(sessionUrl, {
       method: 'GET',
       credentials: 'include',
-      headers: { 'Content-Type': 'application/json' }
+      headers: { 'Content-Type': 'application/json' },
+      'Authorization': `Bearer ${token}`
     })
       .then(res => res.json())
       .then(data => {

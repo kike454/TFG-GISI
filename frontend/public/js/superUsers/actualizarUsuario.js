@@ -49,7 +49,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     formUsuario.direccion.value = usuario.direccion || "";
     formUsuario.webPersonal.value = usuario.webPersonal || "";
     formUsuario.rol.value = usuario.rol;
-    //formUsuario.membresiaPagada.value = String(usuario.membresiaPagada);
 
     if (usuario.membresiaPagada === true) {
         const btnPago = document.getElementById("btn-pagar-membresia");
@@ -124,7 +123,6 @@ document.addEventListener("DOMContentLoaded", async () => {
       direccion: formUsuario.direccion.value.trim(),
       webPersonal: formUsuario.webPersonal.value.trim(),
       rol: formUsuario.rol.value,
-      membresiaPagada: formUsuario.membresiaPagada.value === "true",
       maxReservas: parseInt(formUsuario.maxReservas.value),
     };
 
