@@ -10,7 +10,8 @@ document.addEventListener('DOMContentLoaded', async () => {
   if (token) {
     try {
       const res = await fetch(`${apiBase}/api/users/session-info`, {
-        headers: { 'Authorization': `Bearer ${token}` }
+        headers: { 'Authorization': `Bearer ${token}` },
+        credentials: 'include'
       });
 
       if (!res.ok) throw new Error('No se pudo obtener la sesión');

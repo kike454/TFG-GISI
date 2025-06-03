@@ -8,6 +8,8 @@ const cors = require('cors');
 //const SequelizeStore = require('connect-session-sequelize')(session.Store);
 const { sequelize } = require('./database');
 require('dotenv').config();
+const { seedDatabase } = require('./database/seed');
+
 
 
 const indexRouter = require('./routes/index');
@@ -69,5 +71,33 @@ app.use(function(err, req, res, next) {
     error: err
   });
 });
+
+
+async function connectWithRetry() {
+  let retries = 10;
+
+  while (retries) {
+    try {
+      await sequelize.authenticate();
+      console.log(' Conexión a PostgreSQL establecida');
+      await sequelize.sync({ alter: true });
+      await seedDatabase();
+      console.log(' Tablas sincronizadas con Sequelize');
+      
+      break;
+    } catch (err) {
+      console.log(` DB no está lista todavía, reintentando... (${10 - retries + 1})`);
+      retries -= 1;
+      await new Promise(res => setTimeout(res, 5000));
+    }
+  }
+
+  if (!retries) {
+    console.error(' No se pudo conectar a la base de datos');
+    process.exit(1);
+  }
+}
+
+connectWithRetry();
 
 module.exports = app;

@@ -40,7 +40,7 @@ router.get('/forgot-password', (req, res) => {
 
 router.get('/membresia', verifyTokenFrontend, (req, res) => {
   const usuario = res.locals.session?.user;
-  console.log(usuario);
+  //console.log("USUARIO SESSSIONN: ", usuario);
 
   if (!usuario) {
     return res.redirect('/login');

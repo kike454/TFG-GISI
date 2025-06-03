@@ -102,21 +102,33 @@ router.post('/register', async (req, res) => {
   }
 
 
- function validarDNI(dni) {
-      const letras = 'TRWAGMYFPDXBNJZSQVHLCKE';
+ function validarDocumentoIdentidad(doc) {
+  const letras = 'TRWAGMYFPDXBNJZSQVHLCKE';
 
-      if (!/^\d{8}[A-Z]$/i.test(dni)) return false;
+  doc = doc.toUpperCase();
 
-      const numero = parseInt(dni.slice(0, 8), 10);
-      const letra = dni[8].toUpperCase();
-      const letraEsperada = letras[numero % 23];
+  // Validación DNI
+  if (/^\d{8}[A-Z]$/.test(doc)) {
+    const numero = parseInt(doc.slice(0, 8), 10);
+    const letraEsperada = letras[numero % 23];
+    return doc[8] === letraEsperada;
+  }
 
-      return letra === letraEsperada;
+  // Validación NIE
+  if (/^[XYZ]\d{7}[A-Z]$/.test(doc)) {
+    let niePrefix = { X: '0', Y: '1', Z: '2' };
+    const numero = niePrefix[doc[0]] + doc.slice(1, 8);
+    const letraEsperada = letras[parseInt(numero, 10) % 23];
+    return doc[8] === letraEsperada;
+  }
+
+
+  return false;
 }
 
-  if (!validarDNI(nif)) {
-      return res.status(400).json({ error: 'El DNI no es válido. La letra no corresponde.' });
-  }
+  if (!validarDocumentoIdentidad(nif)) {
+  return res.status(400).json({ error: 'El documento de identidad no es válido (DNI o NIE).' });
+}
 
   try {
     const existing = await Usuario.findOne({ where: { nombre: username } });
@@ -131,6 +143,19 @@ router.post('/register', async (req, res) => {
       correoElectronico,
       nif
     });
+
+        await enviarCorreo({
+        to: correoElectronico,
+        subject: 'Bienvenido/a a la Biblioteca Grema',
+        html: `
+          <h3>Hola ${username},</h3>
+          <p>Tu cuenta ha sido registrada correctamente.</p>
+          <p>Ahora puedes acceder a todos los servicios disponibles en nuestra biblioteca.</p>
+          <p>Si tienes dudas o necesitas soporte, escríbenos a <strong>soporte@grema.store</strong>.</p>
+          <p>¡Bienvenido/a!</p>
+        `
+      });
+
 
     res.status(201).json({ message: `Usuario ${username} registrado correctamente.` });
   } catch (error) {

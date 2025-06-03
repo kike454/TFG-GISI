@@ -4,8 +4,12 @@ const getApiBase = (req) => {
     : 'https://grema.store';
 };
 
+
+
 async function sessionBridge(req, res, next) {
-  const apiBase = getApiBase(req);
+
+  const apiBase = process.env.API_ORIGIN || getApiBase(req);
+  console.log("APIBASE: ", apiBase);
   const token = req.cookies.token; 
 
   if (!token) {
@@ -17,7 +21,9 @@ async function sessionBridge(req, res, next) {
     const response = await fetch(`${apiBase}/api/users/session-info`, {
       headers: {
         Authorization: `Bearer ${token}`,
-      }
+        Cookie: `token=${token}`
+      },
+
     });
 
     const result = await response.json();

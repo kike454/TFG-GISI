@@ -11,7 +11,14 @@ const {
   
   async function seedDatabase() {
     try {
-      await sequelize.sync({ force: true });
+
+      //await sequelize.sync({ force: true }); 
+      const usuariosExistentes = await Usuario.count();
+
+      if (usuariosExistentes > 0) {
+        console.log('La base de datos ya contiene usuarios. Se omite el seed.');
+        return;
+      }
   
       
 
@@ -21,7 +28,12 @@ const {
         { nombre: 'admin1', password: 'TestPassword123!', rol: 'superuser', correoElectronico: 'admin1@email.com', nif: '12345678Z', maxReservas: 3 },
         { nombre: 'carlos', password: 'TestPassword123!', rol: 'user', correoElectronico: 'carlos@email.com', nif: '12345678Z', maxReservas: 3 },
         { nombre: 'paloma', password: 'TestPassword123!', rol: 'user', correoElectronico: 'paloma@email.com', nif: '12345678Z', maxReservas: 3 },
-        { nombre: 'stripeUser',password: 'TestPassword123!', rol: 'user', correoElectronico: 'test@example.com', nif: '12345678Z', maxReservas: 3, membresiaPagada: false}
+        { nombre: 'stripeUser',password: 'TestPassword123!', rol: 'user', correoElectronico: 'test@example.com', nif: '12345678Z', maxReservas: 3, membresiaPagada: false},
+        { nombre: 'admin2', password: 'TestPassword123', rol: 'superuser', correoElectronico: 'admin2@email.com', nif: '00000002X', maxReservas: 3 },
+        { nombre: 'admin3', password: 'TestPassword123', rol: 'superuser', correoElectronico: 'admin3@email.com', nif: '00000003X', maxReservas: 3 },
+        { nombre: 'admin4', password: 'TestPassword123', rol: 'superuser', correoElectronico: 'admin4@email.com', nif: '00000004X', maxReservas: 3 },
+        { nombre: 'admin5', password: 'TestPassword123', rol: 'superuser', correoElectronico: 'admin5@email.com', nif: '00000005X', maxReservas: 3 },
+        { nombre: 'usuarioMembresia', password: 'TestPassword123!', rol: 'user', correoElectronico: 'membresia@email.com', nif: '00000006X', maxReservas: 5, membresiaPagada: true }
       ], { individualHooks: true });
   
       
@@ -50,10 +62,8 @@ const {
       console.log(' Datos de prueba insertados correctamente.');
     } catch (error) {
       console.error(' Error al insertar usuarios:', error);
-    } finally {
-      await sequelize.close();
     }
   }
   
-  seedDatabase();
+  module.exports = { seedDatabase };
   
