@@ -24,6 +24,11 @@ Migración de base de datos de **MySQL** a **PostgreSQL** con despliegue en **AW
 
 ## Instalación y despliegue local
 
+## Prerrequisitos
+
+Tener instalado **[Docker](https://www.docker.com/)** en el equipo.
+
+
 ### Linux
 
 1. Clona el repositorio y entra en la carpeta del proyecto:
@@ -33,22 +38,17 @@ Migración de base de datos de **MySQL** a **PostgreSQL** con despliegue en **AW
     cd TFG-GISI
     ```
 
-2. En una terminal, ejecuta los siguientes comandos para iniciar el **frontend**:
+2. En una terminal, ejecuta los siguientes comandos para crear el fichero de **variables de entorno**:
 
     ```bash
-    cd frontend
-    npm install
-    npm start
+    cp backend/.env.example backend/.env
     ```
-
-3. En otra terminal, ejecuta los siguientes comandos para iniciar el **backend**:
+3. Ahora, lanza la aplicación con **Docker**:
 
     ```bash
-    cd backend
-    npm install
-    npm run seed
-    npm start
+    docker-compose up
     ```
+
 
 4. Abre tu navegador y accede a:
 
@@ -56,10 +56,7 @@ Migración de base de datos de **MySQL** a **PostgreSQL** con despliegue en **AW
     http://localhost:5000
     ```
 
-> **Nota importante**:  
-> En el caso de que el tribunal quiera probar la aplicación en local, no funcionará directamente ya que el archivo `.env` (que contiene las variables de entorno requeridas) no está incluido.  
->  
-> Para obtener este archivo, por favor ponte en contacto conmigo a través del correo electrónico de la universidad.
+
 
 ---
 
