@@ -101,9 +101,9 @@ router.post('/register', async (req, res) => {
     return res.status(400).json({ error: 'Correo electrónico no válido.' });
   }
 
-
+const letras = 'TRWAGMYFPDXBNJZSQVHLCKE';
  function validarDocumentoIdentidad(doc) {
-  const letras = 'TRWAGMYFPDXBNJZSQVHLCKE';
+  
 
   doc = doc.toUpperCase();
 
@@ -113,20 +113,22 @@ router.post('/register', async (req, res) => {
     const letraEsperada = letras[numero % 23];
     return doc[8] === letraEsperada;
   }
+   return false;
+}
 
-  // Validación NIE
+function validarNie(doc){
+// Validación NIE
   if (/^[XYZ]\d{7}[A-Z]$/.test(doc)) {
     let niePrefix = { X: '0', Y: '1', Z: '2' };
     const numero = niePrefix[doc[0]] + doc.slice(1, 8);
     const letraEsperada = letras[parseInt(numero, 10) % 23];
     return doc[8] === letraEsperada;
   }
-
-
-  return false;
+   return false;
 }
 
-  if (!validarDocumentoIdentidad(nif)) {
+
+  if (!validarDocumentoIdentidad(nif) && !validarNie(nif) ) {
   return res.status(400).json({ error: 'El documento de identidad no es válido (DNI o NIE).' });
 }
 

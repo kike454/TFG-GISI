@@ -8,7 +8,7 @@ const getApiBase = (req) => {
 
 async function sessionBridge(req, res, next) {
 
-  const apiBase = process.env.API_ORIGIN || getApiBase(req);
+  const apiBase = process.env.DOCKER_URL || getApiBase(req);
   console.log("APIBASE: ", apiBase);
   const token = req.cookies.token; 
 

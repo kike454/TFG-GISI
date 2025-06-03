@@ -30,6 +30,17 @@ document.getElementById("registerForm").addEventListener("submit", async (e) => 
           return letras[numero % 23] === letra;
   }
 
+  function validarNIE(nie) {
+  const letras = 'TRWAGMYFPDXBNJZSQVHLCKE';
+  nie = nie.toUpperCase();
+  if (!/^[XYZ]\d{7}[A-Z]$/.test(nie)) return false;
+
+  const niePrefix = { X: '0', Y: '1', Z: '2' };
+  const numero = parseInt(niePrefix[nie[0]] + nie.slice(1, 8), 10);
+  const letraEsperada = letras[numero % 23];
+  return nie[8] === letraEsperada;
+}
+
 
   if (!passwordRegex.test(password)) {
   mostrarToast("Contraseña insegura: usa 8+ caracteres, mayúscula, número y símbolo.", "danger");
@@ -41,8 +52,8 @@ if (!emailRegex.test(correoElectronico)) {
   return;
 }
 
-if (!validarDNI(nif)) {
-  mostrarToast("DNI no válido: la letra no coincide con los números", "danger");
+if (!validarDNI(nif) && !validarNIE(nif)) {
+  mostrarToast("Documento de identidad no válido: DNI o NIE incorrecto", "danger");
   return;
 }
 

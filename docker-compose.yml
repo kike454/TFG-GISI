@@ -19,7 +19,7 @@ services:
     build: ./backend
     environment:
       - NODE_ENV=production
-      - API_ORIGIN=http://backend:3001
+      - DOCKER_URL=http://backend:3001
     restart: always
     ports:
       - "3001:3001"
@@ -37,7 +37,7 @@ services:
     build: ./frontend
     environment:
       - NODE_ENV=development
-      - API_ORIGIN=http://backend:3001
+      - DOCKER_URL=http://backend:3001
     restart: always
     ports:
       - "5000:5000"
