@@ -45,7 +45,7 @@ after(async () => {
   await Libro.destroy({
     where: {
       titulo: {
-        [require('sequelize').Op.like]: 'LibroTest%' // ajusta al título de tus pruebas
+        [require('sequelize').Op.like]: 'LibroTest%'
       }
     }
   });

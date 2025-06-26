@@ -46,15 +46,29 @@ Tener instalado **[Docker](https://www.docker.com/)** en el equipo.
 3. Ahora, lanza la aplicación con **Docker**:
 
     ```bash
-    docker-compose up
-    ```
-
-
-4. Abre tu navegador y accede a:
+    curl -fsSL https://get.docker.com -o get-docker.sh
+    sh get-docker.sh
 
     ```
-    http://localhost:5000
+
+4. Comprueba las versiones de Docker y docker compose:
+
     ```
+    docker --version
+    docker compose version
+    ```
+
+5. Arranca los contenedores en segundo plano:
+
+    ```
+    sudo docker compose up -d 
+    ```
+6. Para parar los contenedores previamente lanzados:
+
+    ```
+    sudo docker compose down
+    ```
+
 
 
 
