@@ -1,0 +1,1357 @@
+openapi: 3.0.3
+info:
+  title: Biblioteca Grema – API Completa
+  version: 1.0.0
+  description:
+    API para gestión de usuarios, reservas y libros,
+    con endpoints de administración accesibles solo por superusuario.
+
+servers:
+  - url: https://grema.store
+   
+
+tags:
+  - name: Usuario
+    description: Endpoints de gestión de cuenta, perfil, pareja e hijos
+  - name: Reserva
+    description: Gestión de reservas de libros
+  - name: Libro
+    description: Listado y detalle de libros
+  - name: Superusuario
+    description: Endpoints administrativos para superusuario
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    Usuario:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 42
+        nombre:
+          type: string
+          example: user1
+        rol:
+          type: string
+          enum: [usuario, superusuario]
+          example: usuario
+        correoElectronico:
+          type: string
+          format: email
+          example: usuario@ejemplo.com
+        nif:
+          type: string
+          example: 12345678Z
+        fechaNacimiento:
+          type: string
+          format: date
+          nullable: true
+        telefono:
+          type: string
+          nullable: true
+        direccion:
+          type: string
+          nullable: true
+        webPersonal:
+          type: string
+          nullable: true
+        membresiaPagada:
+          type: boolean
+          example: true
+        maxReservas:
+          type: integer
+          example: 5
+      required: [id, nombre, rol, correoElectronico]
+
+    Libro:
+      type: object
+      properties:
+        id:
+          type: integer
+        titulo:
+          type: string
+        autores:
+          type: string
+          nullable: true
+        editorial:
+          type: string
+          nullable: true
+        genero:
+          type: string
+          nullable: true
+        edad:
+          type: integer
+          nullable: true
+        descripcion:
+          type: string
+          nullable: true
+        copias:
+          type: integer
+        portada:
+          type: string
+          description: Imagen en base64 o null
+          nullable: true
+        imagen2:
+          type: string
+          description: Imagen en base64 o null
+          nullable: true
+        imagen3:
+          type: string
+          description: Imagen en base64 o null
+          nullable: true
+
+    Reserva:
+      type: object
+      properties:
+        id:
+          type: integer
+        fechaInicio:
+          type: string
+          format: date-time
+        fechaFin:
+          type: string
+          format: date-time
+        estadoReserva:
+          type: string
+          enum: [activa, cancelada, finalizada]
+        UsuarioId:
+          type: integer
+        LibroId:
+          type: integer
+        codigoFinalizacion:
+          type: string
+
+    RegistroRequest:
+      type: object
+      required: [username, password, role, correoElectronico, nif]
+      properties:
+        username:
+          type: string
+          example: user1
+        password:
+          type: string
+          format: password
+          description: Al menos 8 caracteres, mayúscula, minúscula, número y símbolo
+        role:
+          type: string
+          enum: [usuario, superusuario]
+          example: usuario
+        correoElectronico:
+          type: string
+          format: email
+        nif:
+          type: string
+          description: DNI o NIE válido
+
+    LoginRequest:
+      type: object
+      required: [username, password]
+      properties:
+        username:
+          type: string
+          example: chocapik
+        password:
+          type: string
+          format: password
+
+    LoginResponse:
+      type: object
+      properties:
+        token:
+          type: string
+        user:
+          $ref: '#/components/schemas/Usuario'
+
+    ForgotPasswordRequest:
+      type: object
+      required: [correoElectronico]
+      properties:
+        correoElectronico:
+          type: string
+          format: email
+
+    ResetPasswordRequest:
+      type: object
+      required: [nuevaPassword]
+      properties:
+        nuevaPassword:
+          type: string
+          format: password
+
+    Pareja:
+      type: object
+      properties:
+        id:
+          type: integer
+        UserId:
+          type: integer
+        nombre:
+          type: string
+        nif:
+          type: string
+        fechaNacimiento:
+          type: string
+          format: date
+        telefono:
+          type: string
+        imagen:
+          type: string
+          format: binary
+          nullable: true
+
+    ParejaCreate:
+      type: object
+      required: [nombre]
+      properties:
+        nombre:
+          type: string
+        nif:
+          type: string
+        fechaNacimiento:
+          type: string
+          format: date
+        telefono:
+          type: string
+
+    ParejaUpdate:
+      type: object
+      properties:
+        nombre:
+          type: string
+        nif:
+          type: string
+        fechaNacimiento:
+          type: string
+          format: date
+        telefono:
+          type: string
+        imagen:
+          type: string
+          format: binary
+
+    Hijo:
+      type: object
+      properties:
+        id:
+          type: integer
+        UserId:
+          type: integer
+        nombre:
+          type: string
+        nif:
+          type: string
+        fechaNacimiento:
+          type: string
+          format: date
+        telefono:
+          type: string
+        imagen:
+          type: string
+          format: binary
+          nullable: true
+
+    HijoCreate:
+      type: object
+      required: [nombre]
+      properties:
+        nombre:
+          type: string
+        nif:
+          type: string
+        fechaNacimiento:
+          type: string
+          format: date
+        telefono:
+          type: string
+
+    HijoUpdate:
+      type: object
+      properties:
+        nombre:
+          type: string
+        nif:
+          type: string
+        fechaNacimiento:
+          type: string
+          format: date
+        telefono:
+          type: string
+        imagen:
+          type: string
+          format: binary
+
+    ReservaCreateRequest:
+      type: object
+      required: [libroId]
+      properties:
+        libroId:
+          type: integer
+
+    ReservaAdminCreateRequest:
+      type: object
+      required: [userId, libroId]
+      properties:
+        userId:
+          type: integer
+        libroId:
+          type: integer
+
+    BookAdminFields:
+      type: object
+      properties:
+        titulo:
+          type: string
+        autores:
+          type: string
+        editorial:
+          type: string
+        genero:
+          type: string
+        edad:
+          type: integer
+        descripcion:
+          type: string
+        copias:
+          type: integer
+        portada:
+          type: string
+          format: binary
+        imagen2:
+          type: string
+          format: binary
+        imagen3:
+          type: string
+          format: binary
+
+    BulkFile:
+      type: string
+      format: binary
+
+    UserAdminUpdate:
+      type: object
+      additionalProperties: true
+
+    ParejaAdminCreate:
+      type: object
+      required: [UserId, nombre]
+      properties:
+        UserId:
+          type: integer
+        nombre:
+          type: string
+        nif:
+          type: string
+        fechaNacimiento:
+          type: string
+          format: date
+        telefono:
+          type: string
+
+    HijoAdminCreate:
+      type: object
+      required: [UserId, nombre]
+      properties:
+        UserId:
+          type: integer
+        nombre:
+          type: string
+        nif:
+          type: string
+        fechaNacimiento:
+          type: string
+          format: date
+        telefono:
+          type: string
+
+    MessageResponse:
+      type: object
+      properties:
+        message:
+          type: string
+
+paths:
+  /api/users/register:
+    post:
+      tags: [Usuario]
+      summary: Registro de un nuevo usuario
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegistroRequest'
+      responses:
+        '201':
+          description: Usuario registrado correctamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+        '400':
+          description: Datos inválidos
+
+  /api/users/login:
+    post:
+      tags: [Usuario]
+      summary: Obtención de JWT
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: Token y datos de usuario
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponse'
+        '401':
+          description: Credenciales inválidas
+
+  /api/users/forgot-password:
+    post:
+      tags: [Usuario]
+      summary: Solicitar enlace de restablecimiento de contraseña
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ForgotPasswordRequest'
+      responses:
+        '200':
+          description: Correo enviado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+        '404':
+          description: Correo no registrado
+
+  /api/users/reset-password/{token}:
+    post:
+      tags: [Usuario]
+      summary: Restablecer contraseña
+      parameters:
+        - in: path
+          name: token
+          required: true
+          schema:
+            type: string
+          description: Token de restablecimiento
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ResetPasswordRequest'
+      responses:
+        '200':
+          description: Contraseña actualizada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+        '400':
+          description: Token inválido o expirado
+
+  /api/users/session-info:
+    get:
+      tags: [Usuario]
+      summary: Información de la sesión actual
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Datos de sesión
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  session:
+                    $ref: '#/components/schemas/Usuario'
+        '401':
+          description: No autorizado
+
+  /api/users/logout:
+    post:
+      tags: [Usuario]
+      summary: Logout (cliente)
+      responses:
+        '200':
+          description: Cierre de sesión
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+
+  /api/users/me:
+    get:
+      tags: [Usuario]
+      summary: Perfil del usuario autenticado
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Perfil
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Usuario'
+        '401':
+          description: No autorizado
+    put:
+      tags: [Usuario]
+      summary: Actualizar perfil
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserAdminUpdate'
+      responses:
+        '200':
+          description: Usuario actualizado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  usuario:
+                    $ref: '#/components/schemas/Usuario'
+        '401':
+          description: No autorizado
+
+  /api/users/me/pareja:
+    get:
+      tags: [Usuario]
+      summary: Obtener pareja del usuario
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Datos de la pareja
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Pareja'
+        '404':
+          description: Pareja no encontrada
+
+  /api/users/parejas:
+    post:
+      tags: [Usuario]
+      summary: Crear pareja
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ParejaCreate'
+      responses:
+        '201':
+          description: Pareja creada
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  pareja:
+                    $ref: '#/components/schemas/Pareja'
+        '400':
+          description: Datos inválidos
+
+  /api/users/parejas/{id}:
+    put:
+      tags: [Usuario]
+      summary: Actualizar pareja
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          description: ID de la pareja
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ParejaUpdate'
+      responses:
+        '200':
+          description: Pareja actualizada
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  pareja:
+                    $ref: '#/components/schemas/Pareja'
+        '404':
+          description: Pareja no encontrada
+
+  /api/users/me/hijo:
+    get:
+      tags: [Usuario]
+      summary: Obtener hijo del usuario
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Datos del hijo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Hijo'
+        '404':
+          description: Hijo no encontrado
+
+  /api/users/hijos:
+    post:
+      tags: [Usuario]
+      summary: Crear hijo
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/HijoCreate'
+      responses:
+        '201':
+          description: Hijo creado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  hijo:
+                    $ref: '#/components/schemas/Hijo'
+        '400':
+          description: Datos inválidos
+
+  /api/users/hijos/{id}:
+    put:
+      tags: [Usuario]
+      summary: Actualizar hijo
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          description: ID del hijo
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/HijoUpdate'
+      responses:
+        '200':
+          description: Hijo actualizado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  hijo:
+                    $ref: '#/components/schemas/Hijo'
+        '404':
+          description: Hijo no encontrado
+
+  /api/reservas:
+    post:
+      tags: [Reserva]
+      summary: Crear reserva (usuario)
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReservaCreateRequest'
+      responses:
+        '201':
+          description: Reserva creada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+        '400':
+          description: Copias no disponibles o datos inválidos
+        '403':
+          description: Membresía no pagada o límite alcanzado
+        '404':
+          description: Usuario no encontrado
+    get:
+      tags: [Reserva]
+      summary: Listar reservas del usuario
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Lista de reservas
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    reserva:
+                      $ref: '#/components/schemas/Reserva'
+                    libro:
+                      $ref: '#/components/schemas/Libro'
+        '500':
+          description: Error interno
+
+  /api/reservas/{id}:
+    delete:
+      tags: [Reserva]
+      summary: Cancelar reserva (usuario)
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          description: ID de la reserva
+      responses:
+        '200':
+          description: Reserva cancelada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+        '400':
+          description: Reserva no activa
+        '403':
+          description: No autorizado
+        '404':
+          description: Reserva no encontrada
+
+  /api/reservas/{id}/ampliar:
+    put:
+      tags: [Reserva]
+      summary: Ampliar reserva (usuario)
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          description: ID de la reserva
+      responses:
+        '200':
+          description: Reserva ampliada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+        '400':
+          description: Reserva no activa
+        '403':
+          description: No autorizado
+        '404':
+          description: Reserva no encontrada
+
+  /api/books:
+    get:
+      tags: [Libro]
+      summary: Listar todos los libros
+      responses:
+        '200':
+          description: Array de libros
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Libro'
+        '500':
+          description: Error al obtener libros
+
+  /api/books/{id}:
+    get:
+      tags: [Libro]
+      summary: Detalle de un libro
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          description: ID del libro
+      responses:
+        '200':
+          description: Libro encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Libro'
+        '404':
+          description: Libro no encontrado
+        '500':
+          description: Error interno
+
+  /api/superusers/usuarios:
+    get:
+      tags: [Superusuario]
+      summary: Listar todos los usuarios
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Array de usuarios
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Usuario'
+        '403':
+          description: No autorizado
+
+  /api/superusers/usuarios/{id}:
+    delete:
+      tags: [Superusuario]
+      summary: Eliminar usuario por ID
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          description: ID del usuario
+      responses:
+        '200':
+          description: Usuario eliminado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+        '403':
+          description: No autorizado
+        '404':
+          description: Usuario no encontrado
+    put:
+      tags: [Superusuario]
+      summary: Actualizar datos de un usuario
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          description: ID del usuario
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserAdminUpdate'
+      responses:
+        '200':
+          description: Usuario actualizado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  usuario:
+                    $ref: '#/components/schemas/Usuario'
+        '403':
+          description: No autorizado
+        '404':
+          description: Usuario no encontrado
+
+  /api/superusers/users/import:
+    post:
+      tags: [Superusuario]
+      summary: Importar usuarios desde Excel
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  $ref: '#/components/schemas/BulkFile'
+      responses:
+        '201':
+          description: Usuarios importados
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+        '400':
+          description: No se proporcionó archivo
+        '403':
+          description: No autorizado
+
+  /api/superusers/usuarios/{id}/reservas:
+    get:
+      tags: [Superusuario]
+      summary: Reservas de un usuario
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          description: ID del usuario
+      responses:
+        '200':
+          description: Lista de reservas
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    reserva:
+                      $ref: '#/components/schemas/Reserva'
+                    libro:
+                      $ref: '#/components/schemas/Libro'
+        '403':
+          description: No autorizado
+        '404':
+          description: Usuario no encontrado
+
+  /api/superusers/reservas/{id}:
+    delete:
+      tags: [Superusuario]
+      summary: Cancelar reserva por superusuario
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          description: ID de la reserva
+      responses:
+        '200':
+          description: Reserva cancelada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+        '400':
+          description: Reserva no activa
+        '403':
+          description: No autorizado
+        '404':
+          description: Reserva no encontrada
+
+  /api/superusers/reservas/{id}/ampliar:
+    put:
+      tags: [Superusuario]
+      summary: Extender reserva por superusuario
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          description: ID de la reserva
+      responses:
+        '200':
+          description: Reserva ampliada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+        '400':
+          description: Reserva inválida o no activa
+        '403':
+          description: No autorizado
+        '404':
+          description: Reserva no encontrada
+
+  /api/superusers/libros:
+    get:
+      tags: [Superusuario]
+      summary: Listar todos los libros
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Array de libros
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Libro'
+        '403':
+          description: No autorizado
+    post:
+      tags: [Superusuario]
+      summary: Añadir nuevo libro con imágenes
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/BookAdminFields'
+      responses:
+        '201':
+          description: Libro añadido
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  libro:
+                    $ref: '#/components/schemas/Libro'
+        '403':
+          description: No autorizado
+
+  /api/superusers/libros/{id}:
+    put:
+      tags: [Superusuario]
+      summary: Actualizar libro con imágenes
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          description: ID del libro
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/BookAdminFields'
+      responses:
+        '200':
+          description: Libro actualizado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  libro:
+                    $ref: '#/components/schemas/Libro'
+        '403':
+          description: No autorizado
+        '404':
+          description: Libro no encontrado
+    delete:
+      tags: [Superusuario]
+      summary: Eliminar libro por ID
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          description: ID del libro
+      responses:
+        '200':
+          description: Libro eliminado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+        '400':
+          description: Reservas activas impiden eliminación
+        '403':
+          description: No autorizado
+        '404':
+          description: Libro no encontrado
+
+  /api/superusers/reservas:
+    post:
+      tags: [Superusuario]
+      summary: Crear reserva para usuario arbitrario
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReservaAdminCreateRequest'
+      responses:
+        '201':
+          description: Reserva creada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+        '400':
+          description: Datos inválidos
+        '403':
+          description: No autorizado
+        '404':
+          description: Usuario o libro no encontrado
+
+  /api/superusers/usuarios/{id}/pareja:
+    get:
+      tags: [Superusuario]
+      summary: Obtener pareja de un usuario
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          description: ID del usuario
+      responses:
+        '200':
+          description: Datos de la pareja
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Pareja'
+        '403':
+          description: No autorizado
+        '404':
+          description: Pareja no encontrada
+
+  /api/superusers/usuarios/{id}/hijo:
+    get:
+      tags: [Superusuario]
+      summary: Obtener hijo de un usuario
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          description: ID del usuario
+      responses:
+        '200':
+          description: Datos del hijo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Hijo'
+        '403':
+          description: No autorizado
+        '404':
+          description: Hijo no encontrado
+
+  /api/superusers/parejas:
+    post:
+      tags: [Superusuario]
+      summary: Crear pareja para usuario arbitrario
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ParejaAdminCreate'
+      responses:
+        '201':
+          description: Pareja creada
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  pareja:
+                    $ref: '#/components/schemas/Pareja'
+        '400':
+          description: Datos inválidos
+        '403':
+          description: No autorizado
+
+  /api/superusers/parejas/{id}:
+    put:
+      tags: [Superusuario]
+      summary: Actualizar pareja por ID
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          description: ID de la pareja
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ParejaUpdate'
+      responses:
+        '200':
+          description: Pareja actualizada
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  pareja:
+                    $ref: '#/components/schemas/Pareja'
+        '403':
+          description: No autorizado
+        '404':
+          description: Pareja no encontrada
+
+  /api/superusers/hijos:
+    post:
+      tags: [Superusuario]
+      summary: Crear hijo para usuario arbitrario
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/HijoAdminCreate'
+      responses:
+        '201':
+          description: Hijo creado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  hijo:
+                    $ref: '#/components/schemas/Hijo'
+        '400':
+          description: Datos inválidos
+        '403':
+          description: No autorizado
+
+  /api/superusers/hijos/{id}:
+    put:
+      tags: [Superusuario]
+      summary: Actualizar hijo por ID
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          description: ID del hijo
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/HijoUpdate'
+      responses:
+        '200':
+          description: Hijo actualizado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  hijo:
+                    $ref: '#/components/schemas/Hijo'
+        '403':
+          description: No autorizado
+        '404':
+          description: Hijo no encontrado
+
+  /api/superusers/libros/import:
+    post:
+      tags: [Superusuario]
+      summary: Importar libros desde Excel
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  $ref: '#/components/schemas/BulkFile'
+      responses:
+        '201':
+          description: Libros importados
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+        '400':
+          description: No se proporcionó archivo
+        '403':
+          description: No autorizado

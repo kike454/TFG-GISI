@@ -43,7 +43,7 @@ Tener instalado **[Docker](https://www.docker.com/)** en el equipo.
     ```bash
     cp backend/.env.example backend/.env
     ```
-3. Ahora, lanza la aplicación con **Docker**:
+3. Descarga y ejecuta el script para instalar **Docker**:
 
     ```bash
     curl -fsSL https://get.docker.com -o get-docker.sh
@@ -70,6 +70,14 @@ Tener instalado **[Docker](https://www.docker.com/)** en el equipo.
     ```
 
 
+## Documentación OpenAPI
+
+El fichero de especificación OpenAPI (`grema.yaml`) se encuentra en la ruta: backend/shcema
+
+Para visualizarlo en Swagger Editor:
+
+1. Abre https://editor.swagger.io/  
+2. Copia y pega el fichero para visualizar los endpoints 
 
 
 ---
